@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Archive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Karaoke Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -19,278 +19,327 @@
             font-family: 'Inter', 'Noto Sans KR', 'Noto Sans JP', sans-serif;
             background-color: var(--apple-bg);
             color: #1C1C1E;
-            letter-spacing: -0.02em;
+            -webkit-user-select: none;
+            overflow-x: hidden;
         }
 
-        /* Apple Glassmorphism Header */
-        header {
-            background: rgba(242, 242, 247, 0.8);
+        /* iOS 스타일 하단 탭 바 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
-        }
-
-        /* Segmented Control */
-        .segmented-control {
-            background: #E3E3E8;
-            border-radius: 10px;
-            padding: 2px;
+            border-top: 0.5px solid rgba(0,0,0,0.1);
             display: flex;
-            position: relative;
+            justify-content: space-around;
+            padding-top: 10px;
+            padding-bottom: calc(15px + env(safe-area-inset-bottom));
+            z-index: 100;
         }
-        .segmented-item {
-            flex: 1;
-            text-align: center;
-            padding: 7px 0;
-            font-size: 13px;
-            font-weight: 600;
-            z-index: 1;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .segmented-item.active { color: #000; }
-        .segmented-item:not(.active) { color: #8E8E93; }
-        .slider {
-            position: absolute;
-            top: 2px;
-            bottom: 2px;
-            width: calc(50% - 2px);
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .slider.right { transform: translateX(100%); }
-
-        /* Card Style */
-        .song-card {
-            background: var(--apple-card);
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
-        }
-        .song-card:active { transform: scale(0.98); background: #F9F9F9; }
-
-        .apple-input {
-            background: #E3E3E8;
-            border-radius: 10px;
-            padding: 10px 14px;
-            width: 100%;
-            outline: none;
-            font-size: 16px;
-        }
-
-        .badge-tj { background: #FF3B30; color: white; }
-        .badge-ky { background: #34C759; color: white; }
-
-        /* Empty State */
-        .no-content-found {
+        .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding-top: 80px;
             color: #8E8E93;
+            font-size: 10px;
+            font-weight: 500;
         }
-        .no-content-found i { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+        .nav-item.active { color: var(--apple-blue); }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; }
 
-        /* Modal Animation */
-        #modal { transition: opacity 0.3s ease; }
-        .modal-content { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        /* 가사 팝업 (Full Screen Modal) */
+        .lyric-view {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 200;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+        .lyric-view.active { transform: translateY(0); }
+
+        /* 가사 텍스트 유지 (Rich Text) */
+        .rich-content {
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .rich-content [style*="color: red"], .rich-content font[color="red"] {
+            color: #FF3B30 !important;
+        }
+
+        /* 카드 및 버튼 */
+        .apple-card {
+            background: var(--apple-card);
+            border-radius: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .search-box {
+            background: #E3E3E8;
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+        }
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 8px;
+            font-size: 16px;
+        }
+
+        .tab-content { display: none; padding-bottom: 100px; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Rich Text Editor for Input */
+        #lyricsEditor {
+            min-height: 150px;
+            background: #F2F2F7;
+            border-radius: 10px;
+            padding: 12px;
+            overflow-y: auto;
+            outline: none;
+        }
     </style>
 </head>
-<body class="safe-area-bottom">
+<body>
 
-    <header class="sticky top-0 z-40 px-5 pt-6 pb-4">
-        <div class="max-w-md mx-auto">
-            <div class="flex justify-between items-baseline mb-5">
-                <h1 class="text-3xl font-bold tracking-tight">Archives</h1>
-                <div class="flex gap-4">
-                    <button onclick="exportData()" class="text-blue-500 text-sm font-medium">백업</button>
-                    <button onclick="toggleModal()" class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                        <i class="fas fa-plus text-sm"></i>
-                    </button>
-                </div>
+    <div id="tab-home" class="tab-content active">
+        <header class="px-5 pt-10 pb-4 sticky top-0 bg-[#F2F2F7]/90 backdrop-blur-md z-30">
+            <h1 class="text-3xl font-bold mb-4">내 리스트</h1>
+            <div class="search-box">
+                <i class="fas fa-search text-gray-400"></i>
+                <input type="text" id="searchInput" onkeyup="renderList()" placeholder="제목, 가수 검색...">
             </div>
-            
-            <div class="segmented-control mb-4" id="genreToggle">
-                <div class="slider" id="slider"></div>
-                <div class="segmented-item active" onclick="setGenre('J-POP', 0)">J-POP</div>
-                <div class="segmented-item" onclick="setGenre('K-POP', 1)">K-POP</div>
+            <div class="flex gap-2 mt-4 overflow-x-auto pb-1 no-scrollbar">
+                <button onclick="setFilter('ALL')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-semibold bg-black text-white">전체</button>
+                <button onclick="setFilter('J-POP')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-semibold bg-white border">J-POP</button>
+                <button onclick="setFilter('K-POP')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-semibold bg-white border">K-POP</button>
+                <button onclick="setFilter('FAV')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-semibold bg-white border"><i class="fas fa-star mr-1"></i>즐겨찾기</button>
             </div>
+        </header>
+        <main class="px-5 space-y-3" id="mainList"></main>
+    </div>
 
-            <div class="relative">
-                <i class="fas fa-search absolute left-3 top-3.5 text-gray-400 text-sm"></i>
-                <input type="text" id="searchInput" onkeyup="renderSongs()" placeholder="제목 또는 가수 검색" class="apple-input pl-10">
+    <div id="tab-add" class="tab-content px-6 pt-10">
+        <h2 class="text-2xl font-bold mb-6">노래 추가</h2>
+        <div class="space-y-4">
+            <div class="flex gap-2 p-1 bg-gray-200 rounded-lg">
+                <button onclick="formGenre='J-POP'; this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('bg-white')); this.classList.add('bg-white')" class="flex-1 py-1.5 rounded-md text-sm font-bold bg-white">J-POP</button>
+                <button onclick="formGenre='K-POP'; this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('bg-white')); this.classList.add('bg-white')" class="flex-1 py-1.5 rounded-md text-sm font-bold">K-POP</button>
+            </div>
+            <input type="text" id="inTitle" class="w-full p-3 rounded-xl border-none bg-white shadow-sm" placeholder="곡 제목">
+            <input type="text" id="inArtist" class="w-full p-3 rounded-xl border-none bg-white shadow-sm" placeholder="가수명">
+            <div class="grid grid-cols-2 gap-3">
+                <input type="text" id="inTJ" class="p-3 rounded-xl border-none bg-white shadow-sm" placeholder="TJ 번호">
+                <input type="text" id="inKY" class="p-3 rounded-xl border-none bg-white shadow-sm" placeholder="KY 번호">
+            </div>
+            <p class="text-xs text-gray-400 ml-1">가사 (색상 포함 복사 붙여넣기 가능)</p>
+            <div id="lyricsEditor" contenteditable="true" class="bg-white shadow-sm"></div>
+            <button onclick="saveSong()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-bold text-lg">저장하기</button>
+        </div>
+    </div>
+
+    <div id="tab-more" class="tab-content px-6 pt-10">
+        <h2 class="text-2xl font-bold mb-6">설정 및 메뉴</h2>
+        <div class="apple-card overflow-hidden">
+            <div onclick="exportData()" class="p-4 flex justify-between items-center border-bottom active:bg-gray-50">
+                <span>데이터 백업 (JSON)</span>
+                <i class="fas fa-chevron-right text-gray-300"></i>
+            </div>
+            <label class="p-4 flex justify-between items-center active:bg-gray-50 cursor-pointer">
+                <span>데이터 복구 (가져오기)</span>
+                <input type="file" id="importFile" onchange="importData(this)" class="hidden">
+                <i class="fas fa-upload text-gray-300"></i>
+            </label>
+            <div onclick="if(confirm('모든 데이터를 삭제할까요?')){songs=[]; saveData();}" class="p-4 flex justify-between items-center text-red-500 active:bg-gray-50">
+                <span>초기화</span>
+                <i class="fas fa-trash-alt"></i>
             </div>
         </div>
-    </header>
+        <p class="text-center text-gray-400 text-xs mt-10">Version 2.0 Pro · Made for J-POP Fans</p>
+    </div>
 
-    <main class="px-5 max-w-md mx-auto mt-6">
-        <div id="songList" class="space-y-3">
+    <div id="lyricPopup" class="lyric-view">
+        <header class="px-5 pt-8 pb-4 border-b flex justify-between items-center">
+            <button onclick="closeLyrics()" class="text-blue-500 font-medium">닫기</button>
+            <div class="text-center">
+                <h3 id="popTitle" class="font-bold text-sm">곡 제목</h3>
+                <p id="popArtist" class="text-[10px] text-gray-400">가수명</p>
             </div>
-    </main>
-
-    <div id="modal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" onclick="toggleModal()"></div>
-        <div class="modal-content absolute bottom-0 left-0 right-0 bg-white rounded-t-[20px] p-6 max-h-[85vh] overflow-y-auto">
-            <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
-            
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold">노래 추가</h2>
-                <div class="flex gap-2 p-1 bg-gray-100 rounded-lg">
-                    <button id="form-jpop" onclick="setFormType('J-POP')" class="px-3 py-1 rounded-md text-xs font-bold bg-white shadow-sm">J-POP</button>
-                    <button id="form-kpop" onclick="setFormType('K-POP')" class="px-3 py-1 rounded-md text-xs font-bold text-gray-500">K-POP</button>
-                </div>
+            <button id="popFavBtn" class="text-gray-300 text-xl"><i class="fas fa-star"></i></button>
+        </header>
+        <div id="popContent" class="flex-1 overflow-y-auto p-6 rich-content text-[17px] leading-relaxed">
             </div>
-            
-            <div class="space-y-5">
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 uppercase ml-1">Title</label>
-                    <input type="text" id="titleMain" class="apple-input mt-1" placeholder="원어 제목">
-                </div>
-                <div id="subTitleArea">
-                    <label class="text-[11px] font-bold text-gray-400 uppercase ml-1">Sub Title (발음/한국어명)</label>
-                    <input type="text" id="titleSub" class="apple-input mt-1" placeholder="예: 괴수의 화노래">
-                </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 uppercase ml-1">Artist</label>
-                    <input type="text" id="artist" class="apple-input mt-1">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-400 uppercase ml-1">TJ No.</label>
-                        <input type="text" id="noTJ" class="apple-input mt-1" placeholder="없음">
-                    </div>
-                    <div>
-                        <label class="text-[11px] font-bold text-gray-400 uppercase ml-1">KY No.</label>
-                        <input type="text" id="noKY" class="apple-input mt-1" placeholder="없음">
-                    </div>
-                </div>
-                <div>
-                    <label class="text-[11px] font-bold text-gray-400 uppercase ml-1">Lyrics / Memo</label>
-                    <textarea id="lyrics" class="apple-input mt-1 h-24 resize-none" placeholder="가사나 특이사항을 적어주세요"></textarea>
-                </div>
-                <button onclick="addSong()" class="w-full py-4 bg-blue-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-200">저장</button>
+        <div class="p-5 border-t bg-gray-50 grid grid-cols-2 gap-4 text-center">
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+                <p class="text-[10px] text-red-500 font-bold">TJ 번호</p>
+                <p id="popTJ" class="text-lg font-black italic">-</p>
+            </div>
+            <div class="bg-white p-2 rounded-lg shadow-sm">
+                <p class="text-[10px] text-green-500 font-bold">금영 번호</p>
+                <p id="popKY" class="text-lg font-black italic">-</p>
             </div>
         </div>
     </div>
 
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home', this)"><i class="fas fa-list-ul"></i>리스트</div>
+        <div class="nav-item" onclick="switchTab('add', this)"><i class="fas fa-plus-circle"></i>추가</div>
+        <div class="nav-item" onclick="switchTab('more', this)"><i class="fas fa-ellipsis-h"></i>더보기</div>
+    </nav>
+
     <script>
-        let songs = JSON.parse(localStorage.getItem('my-pro-karaoke')) || [];
-        let currentViewGenre = 'J-POP';
-        let currentFormGenre = 'J-POP';
-
-        function setGenre(genre, index) {
-            currentViewGenre = genre;
-            const slider = document.getElementById('slider');
-            const items = document.querySelectorAll('.segmented-item');
-            slider.classList.toggle('right', index === 1);
-            items.forEach((item, i) => item.classList.toggle('active', i === index));
-            renderSongs();
-        }
-
-        function setFormType(genre) {
-            currentFormGenre = genre;
-            document.getElementById('form-jpop').className = genre === 'J-POP' ? 'px-3 py-1 rounded-md text-xs font-bold bg-white shadow-sm' : 'px-3 py-1 rounded-md text-xs font-bold text-gray-500';
-            document.getElementById('form-kpop').className = genre === 'K-POP' ? 'px-3 py-1 rounded-md text-xs font-bold bg-white shadow-sm' : 'px-3 py-1 rounded-md text-xs font-bold text-gray-500';
-            document.getElementById('subTitleArea').style.display = genre === 'J-POP' ? 'block' : 'none';
-        }
-
-        function toggleModal() {
-            const modal = document.getElementById('modal');
-            modal.classList.toggle('hidden');
-            if(modal.classList.contains('hidden')) {
-                document.querySelectorAll('.apple-input').forEach(i => i.value = '');
-            }
-        }
-
-        function addSong() {
-            const song = {
-                id: Date.now(),
-                genre: currentFormGenre,
-                titleMain: document.getElementById('titleMain').value,
-                titleSub: document.getElementById('titleSub').value,
-                artist: document.getElementById('artist').value,
-                noTJ: document.getElementById('noTJ').value || '-',
-                noKY: document.getElementById('noKY').value || '-',
-                lyrics: document.getElementById('lyrics').value
-            };
-            if(!song.titleMain || !song.artist) return alert('제목과 가수는 필수입니다.');
-            songs.unshift(song);
-            saveData();
-            toggleModal();
-        }
-
-        function deleteSong(id) {
-            if(confirm('이 노래를 삭제할까요?')) {
-                songs = songs.filter(s => s.id !== id);
-                saveData();
-            }
-        }
+        let songs = JSON.parse(localStorage.getItem('karaoke_v2_data')) || [];
+        let formGenre = 'J-POP';
+        let currentFilter = 'ALL';
 
         function saveData() {
-            localStorage.setItem('my-pro-karaoke', JSON.stringify(songs));
-            renderSongs();
+            localStorage.setItem('karaoke_v2_data', JSON.stringify(songs));
+            renderList();
         }
 
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(songs));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "karaoke_backup.json");
-            document.body.appendChild(downloadAnchorNode);
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            window.scrollTo(0,0);
         }
 
-        function renderSongs() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const container = document.getElementById('songList');
-            container.innerHTML = '';
+        function saveSong() {
+            const title = document.getElementById('inTitle').value;
+            const artist = document.getElementById('inArtist').value;
+            const lyrics = document.getElementById('lyricsEditor').innerHTML; // HTML 구조 그대로 저장
 
-            const filtered = songs.filter(s => 
-                s.genre === currentViewGenre && 
-                (s.titleMain.toLowerCase().includes(search) || s.artist.toLowerCase().includes(search))
-            );
+            if(!title || !artist) return alert('제목과 가수는 필수입니다.');
 
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="no-content-found">
-                        <i class="fas fa-magnifying-glass"></i>
-                        <h3 class="font-bold text-lg">NO CONTENT FOUND</h3>
-                        <p class="text-sm">검색 결과가 없거나 등록된 노래가 없습니다.</p>
-                    </div>`;
+            const newSong = {
+                id: Date.now(),
+                genre: formGenre,
+                title, artist, 
+                tj: document.getElementById('inTJ').value || '-',
+                ky: document.getElementById('inKY').value || '-',
+                lyrics: lyrics,
+                fav: false
+            };
+
+            songs.unshift(newSong);
+            saveData();
+            alert('저장되었습니다!');
+            switchTab('home', document.querySelectorAll('.nav-item')[0]);
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('inTitle').value = '';
+            document.getElementById('inArtist').value = '';
+            document.getElementById('inTJ').value = '';
+            document.getElementById('inKY').value = '';
+            document.getElementById('lyricsEditor').innerHTML = '';
+        }
+
+        function setFilter(type) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('bg-black', 'text-white');
+                b.classList.add('bg-white', 'text-black');
+            });
+            event.target.classList.add('bg-black', 'text-white');
+            renderList();
+        }
+
+        function renderList() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const list = document.getElementById('mainList');
+            list.innerHTML = '';
+
+            const filtered = songs.filter(s => {
+                const matchSearch = s.title.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query);
+                if(currentFilter === 'ALL') return matchSearch;
+                if(currentFilter === 'FAV') return matchSearch && s.fav;
+                return matchSearch && s.genre === currentFilter;
+            });
+
+            if(filtered.length === 0) {
+                list.innerHTML = `<div class="text-center py-20 text-gray-400">노래가 없습니다.</div>`;
                 return;
             }
 
-            filtered.forEach(song => {
-                container.innerHTML += `
-                    <div class="song-card p-5">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="text-[17px] font-bold text-black">${song.titleMain}</h3>
-                                <p class="text-[13px] text-gray-500 mt-0.5">
-                                    ${song.genre === 'J-POP' && song.titleSub ? song.titleSub + ' · ' : ''}${song.artist}
-                                </p>
+            filtered.forEach(s => {
+                list.innerHTML += `
+                    <div class="apple-card p-4 flex justify-between items-center active:scale-95 transition-transform" onclick="showLyrics(${s.id})">
+                        <div>
+                            <h4 class="font-bold text-lg">${s.title}</h4>
+                            <p class="text-xs text-gray-400">${s.artist} · <span class="text-blue-500 font-bold">${s.genre}</span></p>
+                        </div>
+                        <div class="text-right flex items-center gap-4">
+                            <div class="text-[10px] font-black italic">
+                                <div class="text-red-500">TJ ${s.tj}</div>
+                                <div class="text-green-600">KY ${s.ky}</div>
                             </div>
-                            <button onclick="deleteSong(${song.id})" class="text-gray-300 hover:text-red-500 p-1">
-                                <i class="fas fa-minus-circle"></i>
-                            </button>
+                            <i class="fas fa-chevron-right text-gray-200 text-xs"></i>
                         </div>
-                        <div class="flex gap-2 mt-4">
-                            <div class="badge-tj px-3 py-1 rounded-md text-[10px] font-black italic">TJ ${song.noTJ}</div>
-                            <div class="badge-ky px-3 py-1 rounded-md text-[10px] font-black italic">KY ${song.noKY}</div>
-                        </div>
-                        ${song.lyrics ? `
-                            <div class="mt-4 p-3 bg-gray-50 rounded-xl text-xs text-gray-600 leading-relaxed whitespace-pre-line">${song.lyrics}</div>
-                        ` : ''}
                     </div>
                 `;
             });
         }
 
-        renderSongs();
+        function showLyrics(id) {
+            const song = songs.find(s => s.id === id);
+            document.getElementById('popTitle').innerText = song.title;
+            document.getElementById('popArtist').innerText = song.artist;
+            document.getElementById('popTJ').innerText = song.tj;
+            document.getElementById('popKY').innerText = song.ky;
+            document.getElementById('popContent').innerHTML = song.lyrics;
+            
+            const favBtn = document.getElementById('popFavBtn');
+            favBtn.className = song.fav ? 'text-yellow-400 text-xl' : 'text-gray-300 text-xl';
+            favBtn.onclick = (e) => {
+                e.stopPropagation();
+                song.fav = !song.fav;
+                saveData();
+                showLyrics(id);
+            };
+
+            document.getElementById('lyricPopup').classList.add('active');
+        }
+
+        function closeLyrics() {
+            document.getElementById('lyricPopup').classList.remove('active');
+        }
+
+        // 데이터 관리 기능들
+        function exportData() {
+            const blob = new Blob([JSON.stringify(songs)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `my_karaoke_${new Date().toLocaleDateString()}.json`;
+            a.click();
+        }
+
+        function importData(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    songs = imported;
+                    saveData();
+                    alert('성공적으로 복구되었습니다.');
+                } catch(err) { alert('파일이 올바르지 않습니다.'); }
+            };
+            reader.readAsText(file);
+        }
+
+        renderList();
     </script>
 </body>
 </html>
