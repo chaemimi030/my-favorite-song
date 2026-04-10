@@ -16,16 +16,18 @@
         
         :root {
             --ios-bg: #FFFFFF;
-            --ios-header: rgba(255, 255, 255, 0.85);
-            --cool-gray-bg: #F0F2F5;       /* 메인 배경색 */
-            --cool-gray-dark: #E4E7EB;     /* 강조/호버 */
-            --cool-gray-border: #DDE1E7;   /* 경계선 */
+            --ios-header-bg: rgba(255, 255, 255, 0.85);
+            --cool-gray-bg: #F0F2F5;
+            --cool-gray-dark: #E4E7EB;
+            --cool-gray-border: #DDE1E7;
             --ios-text: #1C1E21;
             --ios-subtext: #8E96A3;
             --ios-blue: #74B9FF;
             --ios-heart: #FF8787;
             --spring-easing: cubic-bezier(0.2, 1, 0.2, 1);
-            --side-padding: 24px;         /* 좌우 여백 통일 변수 */
+            --side-padding: 24px;
+            /* 모든 페이지의 시작 높이를 210px로 박제 */
+            --header-height: 210px; 
         }
 
         body {
@@ -37,20 +39,25 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* [고정 헤더 구조 통일] */
+        /* [고정 헤더] 모든 탭에서 동일한 높이를 차지하도록 설정 */
         .ios-header {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-            background: var(--ios-header);
+            background: var(--ios-header-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             padding-top: env(safe-area-inset-top);
+            height: var(--header-height); /* 높이 고정 */
+            display: flex; flex-direction: column;
         }
-        /* 제목 높이와 좌우 여백을 모든 페이지에서 고정 */
-        .header-main { padding: 32px var(--side-padding) 16px; }
+
+        .header-main { padding: 32px var(--side-padding) 12px; }
         .header-title { font-size: 34px; font-weight: 800; letter-spacing: -0.05em; }
 
-        /* [홈 전용 헤더 요소] */
-        #homeHeaderAddon { padding-bottom: 12px; }
+        /* [홈 전용 요소] - 자리를 차지하되 타 페이지에선 안보이게 처리 */
+        #homeHeaderAddon { 
+            transition: opacity 0.2s;
+            flex-grow: 1;
+        }
         .search-container { padding: 0 var(--side-padding) 16px; }
         .search-box { background: var(--cool-gray-bg); border-radius: 14px; padding: 10px 16px; display: flex; align-items: center; }
         
@@ -59,22 +66,26 @@
         .filter-pill {
             flex-shrink: 0; padding: 8px 16px; border-radius: 20px;
             font-size: 14px; font-weight: 600; background: var(--cool-gray-bg);
-            color: var(--ios-subtext); transition: 0.3s var(--spring-easing);
+            color: var(--ios-subtext); transition: 0.3s;
         }
         .filter-pill.active { background: var(--ios-text); color: #fff; }
 
-        /* [페이지 레이아웃 - 여백 통일] */
-        .tab-page { display: none; padding-left: var(--side-padding); padding-right: var(--side-padding); padding-bottom: 140px; min-height: 100vh; }
-        /* 헤더 높이에 맞춘 상단 여백 보정 */
-        #tab-home { padding-top: 215px; } 
-        #tab-add, #tab-more { padding-top: 130px; } 
+        /* [페이지 레이아웃 - 완벽 통일] */
+        .tab-page { 
+            display: none; 
+            padding-left: var(--side-padding); 
+            padding-right: var(--side-padding); 
+            padding-top: var(--header-height); /* 헤더 높이만큼 정확히 내림 */
+            padding-bottom: 140px; 
+            min-height: 100vh; 
+        }
         
-        .tab-page.active { display: block; animation: pageFade 0.4s var(--spring-easing); }
-        @keyframes pageFade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-page.active { display: block; animation: pageFade 0.3s var(--spring-easing); }
+        @keyframes pageFade { from { opacity: 0; } to { opacity: 1; } }
 
-        /* [공통 카드 및 입력창] */
-        .ios-card { background-color: var(--cool-gray-bg); border-radius: 20px; border: none; transition: 0.3s; }
-        .song-card { padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        /* [공통 요소] */
+        .ios-card { background-color: var(--cool-gray-bg); border-radius: 20px; border: none; }
+        .song-card { padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
         .song-card:active { transform: scale(0.97); background-color: var(--cool-gray-dark); }
 
         .ios-input { background: var(--cool-gray-bg); border-radius: 16px; padding: 16px; width: 100%; outline: none; font-size: 16px; border: 1.5px solid transparent; }
@@ -88,7 +99,7 @@
             padding: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
         }
         .tool-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 15px; color: #4A5568; }
-        .tool-btn:active { transform: scale(0.85); background: rgba(0,0,0,0.1); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .tool-btn:active { transform: scale(0.85); background: rgba(0,0,0,0.1); }
         .color-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid white; }
 
         /* [하단 탭 바] */
@@ -108,9 +119,6 @@
             transition: transform 0.5s var(--spring-easing);
         }
         .slide-up.active { transform: translate3d(0, 44px, 0); box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
-
-        /* 장르 태그 컬러 */
-        .tag-jpop { color: #818CF8; } .tag-kpop { color: #60A5FA; } .tag-cpop { color: #FB923C; }
     </style>
 </head>
 <body>
@@ -155,7 +163,6 @@
                 <input type="text" id="inTJ" class="ios-input" placeholder="TJ 번호">
                 <input type="text" id="inKY" class="ios-input" placeholder="금영 번호">
             </div>
-            
             <div class="pro-toolbar">
                 <div class="flex gap-1">
                     <button onclick="execCmd('bold')" class="tool-btn"><i class="fas fa-bold"></i></button>
@@ -168,9 +175,8 @@
                     <button onclick="execCmd('foreColor', '#1C1E21')" class="tool-btn"><div class="color-dot bg-[#1C1E21]"></div></button>
                 </div>
             </div>
-            
             <div id="lyricsEditor" contenteditable="true"></div>
-            <button onclick="saveSong()" id="saveBtn" class="w-full py-5 bg-[#1C1E21] text-white rounded-3xl font-bold text-xl active:scale-95 transition-all mt-4">등록하기</button>
+            <button onclick="saveSong()" id="saveBtn" class="w-full py-5 bg-[#1C1E21] text-white rounded-3xl font-bold text-xl active:scale-95 mt-4">등록하기</button>
             <button id="cancelEditBtn" onclick="cancelEditing()" class="hidden w-full py-4 text-gray-400 font-semibold text-center">수정 취소</button>
         </div>
     </div>
@@ -180,7 +186,7 @@
             <div onclick="exportData()" class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 백업</span><i class="fas fa-download text-blue-400"></i></div>
             <label class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 복구</span><input type="file" onchange="importData(this)" class="hidden"><i class="fas fa-upload text-blue-400"></i></label>
             <div onclick="clearData()" class="ios-input flex justify-between items-center text-red-400 cursor-pointer"><span>모든 데이터 초기화</span><i class="fas fa-trash-alt"></i></div>
-            <div class="pt-24 text-center opacity-30 text-[10px] uppercase font-bold tracking-tighter">Version 6.2.0 Unified</div>
+            <div class="pt-24 text-center opacity-30 text-[10px] uppercase font-bold tracking-tighter">Version 6.3.0 Fixed Layout</div>
         </div>
     </div>
 
@@ -196,10 +202,10 @@
                 <button id="popFavBtn" class="text-2xl"><i class="fas fa-heart"></i></button>
             </div>
         </header>
-        <div id="popContent" class="flex-1 overflow-y-auto px-8 py-6 text-xl leading-relaxed text-left"></div>
+        <div id="popContent" class="flex-1 overflow-y-auto px-8 py-6 text-xl text-left"></div>
         <div class="px-8 pt-6 pb-14 bg-[#F8FAFC] flex gap-5">
-            <div class="flex-1 text-center border-r border-gray-200"><span class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">TJ Media</span><span id="popTJ" class="text-2xl font-black italic"></span></div>
-            <div class="flex-1 text-center"><span class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">Kumyoung</span><span id="popKY" class="text-2xl font-black italic"></span></div>
+            <div class="flex-1 text-center border-r border-gray-200"><span class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">TJ</span><span id="popTJ" class="text-2xl font-black italic"></span></div>
+            <div class="flex-1 text-center"><span class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">KY</span><span id="popKY" class="text-2xl font-black italic"></span></div>
         </div>
     </div>
 
@@ -223,10 +229,17 @@
             const titleMap = { 'home': '보관함', 'add': '노래 등록', 'more': '설정' };
             document.getElementById('pageTitle').innerText = titleMap[tabId];
             
-            // 홈 탭일 때만 검색/카테고리 바 보임
-            document.getElementById('homeHeaderAddon').style.display = (tabId === 'home') ? 'block' : 'none';
+            // 핵심: 다른 탭에서는 addon을 보이지 않게 하되, 공간은 투명하게 유지하여 레이아웃 튐 방지
+            const addon = document.getElementById('homeHeaderAddon');
+            if(tabId === 'home') {
+                addon.style.opacity = "1";
+                addon.style.visibility = "visible";
+                renderList();
+            } else {
+                addon.style.opacity = "0";
+                addon.style.visibility = "hidden";
+            }
             
-            if(tabId === 'home') renderList();
             if(tabId !== 'add') cancelEditing();
             window.scrollTo(0,0);
         }
