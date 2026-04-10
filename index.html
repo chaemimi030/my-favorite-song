@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>노래방 아카이브</title>
+    <title>My노래방</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/180/74B9FF/headphones.png">
+    
+    <link rel="apple-touch-icon" href="https://img.icons8.com/wired/180/FF8787/headphones.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -23,7 +24,7 @@
             --ios-text: #1C1E21;
             --ios-subtext: #8E96A3;
             --ios-blue: #74B9FF;
-            --ios-heart: #FF8787;
+            --ios-heart: #FF8787; /* 핑크색 하트 포인트 */
             --ios-highlight: #FEF08A;
             --spring-easing: cubic-bezier(0.2, 1, 0.2, 1);
             --side-padding: 24px;
@@ -53,15 +54,11 @@
         .search-container { padding: 0 var(--side-padding) 16px; }
         .search-box { background: var(--cool-gray-bg); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; }
         
-        /* [카테고리 폭 조정 - 더 좁게] */
-        .category-scroll { 
-            display: flex; gap: 6px; overflow-x: auto; 
-            padding: 0 var(--side-padding) 4px; 
-        }
+        /* [카테고리 폭 고정] */
+        .category-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 0 var(--side-padding) 4px; }
         .category-scroll::-webkit-scrollbar { display: none; }
         .filter-pill {
-            flex: 0 0 72px; /* 85px -> 72px로 축소 */
-            height: 34px;
+            flex: 0 0 72px; height: 34px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 17px; font-size: 12px; font-weight: 600; 
             background: var(--cool-gray-bg); color: var(--ios-subtext); 
@@ -76,13 +73,12 @@
         .ios-input:focus { background: #fff; border-color: var(--cool-gray-border); }
         .song-card { background: var(--cool-gray-bg); border-radius: 20px; padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* [툴바 디자인 - 고정 크기 및 마우스 포커스 방지] */
+        /* [툴바 디자인 - 핑크 포인트] */
         .pro-toolbar { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding: 4px 0; }
         .tool-box {
             background: #fff; border: 1px solid var(--cool-gray-border); border-radius: 12px;
             width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; transition: all 0.2s; cursor: pointer;
-            user-select: none; -webkit-user-select: none;
         }
         .tool-box:active { transform: scale(0.9); background: var(--cool-gray-bg); }
         .color-dot { width: 20px; height: 20px; border-radius: 6px; }
@@ -92,6 +88,7 @@
             padding: 20px; outline: none; font-size: 17px; line-height: 1.8;
         }
 
+        /* [하단 네비게이션] */
         .bottom-nav {
             position: fixed; bottom: 30px; left: 24px; right: 24px;
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
@@ -101,6 +98,7 @@
         .nav-item { flex: 1; padding: 12px 0; border-radius: 22px; color: var(--ios-subtext); text-align: center; }
         .nav-item.active { background: var(--cool-gray-bg); color: var(--ios-blue); font-weight: bold; }
 
+        /* 가사 팝업 */
         .slide-up {
             position: fixed; inset: 0; background: #fff; z-index: 3000;
             transform: translate3d(0, 100%, 0); border-radius: 40px 40px 0 0;
@@ -148,8 +146,8 @@
             <input type="text" id="inSubTitle" class="ios-input" placeholder="발음 또는 부제">
             <input type="text" id="inArtist" class="ios-input" placeholder="가수명">
             <div class="grid grid-cols-2 gap-3">
-                <input type="text" id="inTJ" class="ios-input" placeholder="TJ">
-                <input type="text" id="inKY" class="ios-input" placeholder="KY">
+                <input type="text" id="inTJ" class="ios-input" placeholder="TJ 번호">
+                <input type="text" id="inKY" class="ios-input" placeholder="금영 번호">
             </div>
             
             <div class="pro-toolbar">
@@ -172,7 +170,7 @@
             <div onclick="exportData()" class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 백업</span><i class="fas fa-download text-blue-400"></i></div>
             <label class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 복구</span><input type="file" onchange="importData(this)" class="hidden"><i class="fas fa-upload text-blue-400"></i></label>
             <div onclick="clearData()" class="ios-input flex justify-between items-center text-red-400 cursor-pointer"><span>모든 데이터 초기화</span><i class="fas fa-trash-alt"></i></div>
-            <div class="pt-24 text-center opacity-30 text-[10px] uppercase font-bold tracking-tighter">Version 6.8.0 Fixed Editor</div>
+            <div class="pt-24 text-center opacity-30 text-[10px] uppercase font-bold tracking-tighter">Version 7.0.0 Pink Edition</div>
         </div>
     </div>
 
@@ -190,8 +188,8 @@
         </header>
         <div id="popContent" class="flex-1 overflow-y-auto px-8 py-6 text-xl text-left"></div>
         <div class="px-8 pt-6 pb-14 bg-[#F8FAFC] flex gap-5">
-            <div class="flex-1 text-center border-r border-gray-200"><span class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">TJ</span><span id="popTJ" class="text-2xl font-black italic"></span></div>
-            <div class="flex-1 text-center"><span class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">KY</span><span id="popKY" class="text-2xl font-black italic"></span></div>
+            <div class="flex-1 text-center border-r border-gray-200"><span class="block text-[10px] font-bold text-gray-400 mb-1 uppercase">TJ Media</span><span id="popTJ" class="text-2xl font-black italic"></span></div>
+            <div class="flex-1 text-center"><span class="block text-[10px] font-bold text-gray-400 mb-1 uppercase"> Kumyoung</span><span id="popKY" class="text-2xl font-black italic"></span></div>
         </div>
     </div>
 
@@ -326,14 +324,11 @@
             document.getElementById('cancelEditBtn').classList.add('hidden');
             document.getElementById('saveBtn').innerText = '등록하기';
         }
-        
-        // 서체 명령 실행 (포커스 유지 로직 포함)
         function execCmd(c,v=null) { 
             const editor = document.getElementById('lyricsEditor');
             editor.focus();
             document.execCommand(c, false, v); 
         }
-
         function exportData() { const b=new Blob([JSON.stringify(songs)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='karaoke_backup.json'; a.click(); }
         function importData(i) { const r=new FileReader(); r.onload=(e)=>{ songs=JSON.parse(e.target.result); localStorage.setItem('karaoke_v5_data',JSON.stringify(songs)); location.reload(); }; r.readAsText(i.files[0]); }
         function clearData() { if(confirm('모든 데이터를 삭제할까요?')) { localStorage.removeItem('karaoke_v5_data'); location.reload(); } }
