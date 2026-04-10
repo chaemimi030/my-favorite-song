@@ -37,98 +37,82 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* [가변형 고정 헤더] */
+        /* [헤더 구조 수정] height를 고정하지 않고 내용에 따라 가변적으로 작동 */
         .ios-header {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
             background: var(--ios-header-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             padding-top: env(safe-area-inset-top);
-            transition: all 0.4s var(--spring-easing);
             border-bottom: 1px solid transparent;
         }
-        /* 홈 탭일 때의 높이 */
-        .header-home { height: 210px; }
-        /* 일반 탭일 때의 높이 (제목만 노출) */
-        .header-compact { height: 110px; border-bottom: 1px solid var(--cool-gray-bg); }
+        .header-main { padding: 32px var(--side-padding) 12px; }
+        .header-title { font-size: 34px; font-weight: 800; letter-spacing: -0.05em; }
 
-        .header-main { padding: 32px var(--side-padding) 0; }
-        .header-title { font-size: 34px; font-weight: 800; letter-spacing: -0.05em; transition: 0.3s; }
-
-        /* 홈 전용 섹션 */
-        #homeHeaderAddon { 
-            overflow: hidden;
-            transition: all 0.3s var(--spring-easing);
-            opacity: 1;
-        }
-        .search-container { padding: 16px var(--side-padding) 16px; }
-        .search-box { background: var(--cool-gray-bg); border-radius: 14px; padding: 10px 16px; display: flex; align-items: center; }
+        /* 홈 전용 애드온: 탭 전환 시 display: none으로 공간 점유를 제거 */
+        #homeHeaderAddon { display: block; padding-bottom: 15px; }
+        .search-container { padding: 0 var(--side-padding) 16px; }
+        .search-box { background: var(--cool-gray-bg); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; }
         
-        .category-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 0 var(--side-padding) 4px; }
+        .category-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 0 var(--side-padding) 4px; }
         .category-scroll::-webkit-scrollbar { display: none; }
         .filter-pill {
-            flex-shrink: 0; padding: 8px 16px; border-radius: 20px;
+            flex-shrink: 0; padding: 7px 16px; border-radius: 18px;
             font-size: 14px; font-weight: 600; background: var(--cool-gray-bg);
             color: var(--ios-subtext); transition: 0.2s;
         }
         .filter-pill.active { background: var(--ios-text); color: #fff; }
 
-        /* [페이지 레이아웃 - 가변 여백] */
-        .tab-page { 
-            display: none; 
-            padding-left: var(--side-padding); 
-            padding-right: var(--side-padding); 
-            padding-bottom: 140px; 
-            min-height: 100vh; 
-        }
-        /* 페이지별 초기 여백 설정 */
-        #tab-home { padding-top: 220px; }
-        #tab-add, #tab-more { padding-top: 130px; }
+        /* [탭 페이지 여백 최적화] */
+        .tab-page { display: none; padding: 0 var(--side-padding) 140px; min-height: 100vh; }
         
-        .tab-page.active { display: block; animation: pageFade 0.4s var(--spring-easing); }
-        @keyframes pageFade { from { opacity: 0; } to { opacity: 1; } }
+        /* 헤더가 고정이 아닌 relative 역할을 하므로 각 페이지 상단 여백을 헤더 높이에 맞춤 */
+        .tab-page.active { display: block; }
 
-        /* [공통 요소 - 쿨 그레이] */
-        .ios-card { background-color: var(--cool-gray-bg); border-radius: 20px; border: none; }
-        .song-card { padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .song-card:active { transform: scale(0.97); background-color: var(--cool-gray-dark); }
+        /* [공통 요소] */
+        .ios-input { background: var(--cool-gray-bg); border-radius: 14px; padding: 16px; width: 100%; outline: none; font-size: 16px; border: 1.5px solid transparent; }
+        .ios-input:focus { background: #fff; border-color: var(--cool-gray-border); }
+        .song-card { background: var(--cool-gray-bg); border-radius: 20px; padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .song-card:active { transform: scale(0.98); background: var(--cool-gray-dark); }
 
-        .ios-input { background: var(--cool-gray-bg); border-radius: 16px; padding: 16px; width: 100%; outline: none; font-size: 16px; border: 1.5px solid transparent; transition: 0.3s; }
-        .ios-input:focus { background: #fff; border-color: var(--cool-gray-border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-
-        #lyricsEditor { min-height: 250px; background: var(--cool-gray-bg); border-radius: 20px; padding: 20px; outline: none; font-size: 17px; line-height: 1.7; }
-
-        /* [Pro 툴바 - 쿨 그레이 테마] */
-        .pro-toolbar {
-            background: var(--cool-gray-dark); border-radius: 20px;
-            padding: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+        /* [툴바 디자인 - 화이트 박스 + 회색 테두리] */
+        .pro-toolbar { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding: 4px 0; }
+        .pro-toolbar::-webkit-scrollbar { display: none; }
+        .tool-box {
+            background: #fff; border: 1px solid var(--cool-gray-border); border-radius: 12px;
+            width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.2s; cursor: pointer;
         }
-        .tool-btn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 15px; color: #4A5568; transition: 0.2s; }
-        .tool-btn:active { transform: scale(0.85); background: rgba(0,0,0,0.1); }
-        .color-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid white; }
+        .tool-box:active { transform: scale(0.9); background: var(--cool-gray-bg); }
+        .color-dot { width: 20px; height: 20px; border-radius: 6px; }
 
-        /* [하단 탭 바] */
+        #lyricsEditor { 
+            min-height: 250px; background: var(--cool-gray-bg); border-radius: 20px; 
+            padding: 20px; outline: none; font-size: 17px; line-height: 1.8;
+        }
+
+        /* [하단 네비게이션] */
         .bottom-nav {
             position: fixed; bottom: 30px; left: 24px; right: 24px;
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
-            border-radius: 30px; display: flex; padding: 6px; z-index: 2000;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08); border: 1px solid var(--cool-gray-dark);
+            border-radius: 28px; display: flex; padding: 6px; z-index: 2000;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06); border: 1px solid var(--cool-gray-dark);
         }
-        .nav-item { flex: 1; padding: 12px 0; border-radius: 24px; color: var(--ios-subtext); text-align: center; transition: 0.3s; }
-        .nav-item.active { background: var(--cool-gray-bg); color: var(--ios-blue); }
+        .nav-item { flex: 1; padding: 12px 0; border-radius: 22px; color: var(--ios-subtext); text-align: center; }
+        .nav-item.active { background: var(--cool-gray-bg); color: var(--ios-blue); font-weight: bold; }
 
-        /* 가사 팝업 */
+        /* [가사 팝업] */
         .slide-up {
             position: fixed; inset: 0; background: #fff; z-index: 3000;
             transform: translate3d(0, 100%, 0); border-radius: 40px 40px 0 0;
             transition: transform 0.5s var(--spring-easing);
         }
-        .slide-up.active { transform: translate3d(0, 44px, 0); box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
+        .slide-up.active { transform: translate3d(0, 44px, 0); }
     </style>
 </head>
 <body>
 
-    <header id="mainHeader" class="ios-header header-home">
+    <header id="mainHeader" class="ios-header">
         <div class="header-main">
             <h1 id="pageTitle" class="header-title">보관함</h1>
         </div>
@@ -149,11 +133,11 @@
         </div>
     </header>
 
-    <div id="tab-home" class="tab-page active">
+    <div id="tab-home" class="tab-page active" style="padding-top: 220px;">
         <div id="mainList"></div>
     </div>
 
-    <div id="tab-add" class="tab-page">
+    <div id="tab-add" class="tab-page" style="padding-top: 130px;">
         <div class="flex p-1 bg-[#F0F2F5] rounded-2xl mb-6">
             <button onclick="setFormGenre('J-POP')" id="btnJ" class="flex-1 py-3 rounded-xl text-xs font-bold bg-white shadow-sm">J-POP</button>
             <button onclick="setFormGenre('K-POP')" id="btnK" class="flex-1 py-3 rounded-xl text-xs font-bold text-gray-400">K-POP</button>
@@ -170,30 +154,26 @@
             </div>
             
             <div class="pro-toolbar">
-                <div class="flex gap-1">
-                    <button onclick="execCmd('bold')" class="tool-btn"><i class="fas fa-bold"></i></button>
-                    <button onclick="execCmd('removeFormat')" class="tool-btn"><i class="fas fa-eraser"></i></button>
-                </div>
-                <div class="flex gap-1">
-                    <button onclick="execCmd('foreColor', '#FF8787')" class="tool-btn"><div class="color-dot bg-[#FF8787]"></div></button>
-                    <button onclick="execCmd('foreColor', '#74B9FF')" class="tool-btn"><div class="color-dot bg-[#74B9FF]"></div></button>
-                    <button onclick="execCmd('foreColor', '#7BE38E')" class="tool-btn"><div class="color-dot bg-[#7BE38E]"></div></button>
-                    <button onclick="execCmd('foreColor', '#1C1E21')" class="tool-btn"><div class="color-dot bg-[#1C1E21]"></div></button>
-                </div>
+                <div class="tool-box" onclick="execCmd('bold')"><i class="fas fa-bold"></i></div>
+                <div class="tool-box" onclick="execCmd('removeFormat')"><i class="fas fa-eraser"></i></div>
+                <div class="tool-box" onclick="execCmd('foreColor', '#FF8787')"><div class="color-dot bg-[#FF8787]"></div></div>
+                <div class="tool-box" onclick="execCmd('foreColor', '#74B9FF')"><div class="color-dot bg-[#74B9FF]"></div></div>
+                <div class="tool-box" onclick="execCmd('foreColor', '#7BE38E')"><div class="color-dot bg-[#7BE38E]"></div></div>
+                <div class="tool-box" onclick="execCmd('foreColor', '#1C1E21')"><div class="color-dot bg-[#1C1E21]"></div></div>
             </div>
             
-            <div id="lyricsEditor" contenteditable="true" placeholder="가사를 입력하세요..."></div>
-            <button onclick="saveSong()" id="saveBtn" class="w-full py-5 bg-[#1C1E21] text-white rounded-3xl font-bold text-xl active:scale-95 mt-4">등록하기</button>
+            <div id="lyricsEditor" contenteditable="true"></div>
+            <button onclick="saveSong()" id="saveBtn" class="w-full py-5 bg-[#1C1E21] text-white rounded-3xl font-bold text-xl active:scale-95 transition-all mt-4">등록하기</button>
             <button id="cancelEditBtn" onclick="cancelEditing()" class="hidden w-full py-4 text-gray-400 font-semibold text-center mt-2">수정 취소</button>
         </div>
     </div>
 
-    <div id="tab-more" class="tab-page">
+    <div id="tab-more" class="tab-page" style="padding-top: 130px;">
         <div class="space-y-3">
             <div onclick="exportData()" class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 백업</span><i class="fas fa-download text-blue-400"></i></div>
             <label class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 복구</span><input type="file" onchange="importData(this)" class="hidden"><i class="fas fa-upload text-blue-400"></i></label>
-            <div onclick="clearData()" class="ios-input flex justify-between items-center text-red-300 cursor-pointer"><span>모든 데이터 초기화</span><i class="fas fa-trash-alt"></i></div>
-            <div class="pt-24 text-center opacity-30 text-[10px] uppercase font-bold tracking-tighter">Version 6.4.0 Adaptive Header</div>
+            <div onclick="clearData()" class="ios-input flex justify-between items-center text-red-400 cursor-pointer"><span>모든 데이터 초기화</span><i class="fas fa-trash-alt"></i></div>
+            <div class="pt-24 text-center opacity-30 text-[10px] uppercase font-bold tracking-tighter">Version 6.6.0 Stable</div>
         </div>
     </div>
 
@@ -236,19 +216,13 @@
             const titleMap = { 'home': '보관함', 'add': '노래 등록', 'more': '설정' };
             document.getElementById('pageTitle').innerText = titleMap[tabId];
             
-            // 핵심: 탭에 따라 헤더 높이와 애드온 가시성 조절
-            const header = document.getElementById('mainHeader');
+            // 핵심: 가변 높이 대신 display 조절로 불필요한 공간 제거
             const addon = document.getElementById('homeHeaderAddon');
-            
             if(tabId === 'home') {
-                header.className = "ios-header header-home";
                 addon.style.display = "block";
-                setTimeout(() => addon.style.opacity = "1", 10);
                 renderList();
             } else {
-                header.className = "ios-header header-compact";
-                addon.style.opacity = "0";
-                setTimeout(() => addon.style.display = "none", 300);
+                addon.style.display = "none";
             }
             
             if(tabId !== 'add') cancelEditing();
@@ -292,9 +266,8 @@
             container.innerHTML = filtered.length ? '' : '<div class="text-center py-40 opacity-20 font-bold italic">데이터가 없습니다</div>';
             filtered.forEach(s => {
                 const card = document.createElement('div');
-                card.className = 'song-card ios-card shadow-sm';
+                card.className = 'song-card shadow-sm';
                 card.onclick = () => showLyrics(s.id);
-                const gClass = s.genre === 'J-POP' ? 'tag-jpop' : (s.genre === 'K-POP' ? 'tag-kpop' : 'tag-cpop');
                 card.innerHTML = `
                     <div class="overflow-hidden pr-4 text-left">
                         <div class="flex items-center gap-1.5">
@@ -302,7 +275,6 @@
                             <h4 class="font-bold text-xl truncate tracking-tight">${s.title}</h4>
                         </div>
                         <p class="text-xs text-gray-400 mt-1 truncate">${s.sub ? s.sub + ' • ' : ''}${s.artist}</p>
-                        <span class="${gClass} text-[9px] font-bold uppercase tracking-widest">${s.genre}</span>
                     </div>
                     <div class="shrink-0 text-right">
                         <div class="text-[11px] font-black italic text-red-400">${s.tj}</div>
