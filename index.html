@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J-POP Archive</title>
+    <title>My Karaoke Archive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -22,7 +22,7 @@
             -webkit-backdrop-filter: blur(20px);
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .apple-input {
@@ -32,53 +32,79 @@
             padding: 12px 16px;
             width: 100%;
             outline: none;
-            transition: all 0.2s;
         }
 
-        .apple-input:focus {
-            background: #E5E5EA;
-            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+        /* Apple Style Segmented Control */
+        .segmented-control {
+            background: #EEEEF0;
+            border-radius: 10px;
+            padding: 2px;
+            display: flex;
+            position: relative;
         }
+        .segmented-item {
+            flex: 1;
+            text-align: center;
+            padding: 6px 0;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .segmented-item.active { color: #000; }
+        .segmented-item:not(.active) { color: #8E8E93; }
+        .slider {
+            position: absolute;
+            top: 2px;
+            bottom: 2px;
+            width: calc(50% - 2px);
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .slider.right { transform: translateX(100%); }
 
         .btn-primary {
             background: #007AFF;
             color: white;
             border-radius: 12px;
             font-weight: 600;
-            transition: transform 0.1s ease;
-        }
-
-        .btn-primary:active {
-            transform: scale(0.97);
         }
 
         .badge-tj { background: #FF3B30; color: white; }
         .badge-ky { background: #34C759; color: white; }
 
-        /* Smooth animation for list */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .song-item { animation: fadeIn 0.4s ease forwards; }
+        .song-item { animation: fadeIn 0.3s ease-out forwards; }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-10">
 
-    <header class="sticky top-0 z-50 px-6 py-4 bg-[#F5F5F7]/80 backdrop-blur-md">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tight">My J-POP</h1>
-            <button onclick="toggleModal()" class="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                <i class="fas fa-plus"></i>
-            </button>
+    <header class="sticky top-0 z-50 px-6 py-4 bg-[#F5F5F7]/90 backdrop-blur-md">
+        <div class="max-w-md mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-bold tracking-tight">Karaoke List</h1>
+                <button onclick="toggleModal()" class="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            
+            <div class="segmented-control mb-4" id="genreToggle">
+                <div class="slider" id="slider"></div>
+                <div class="segmented-item active" onclick="setGenre('J-POP', 0)">J-POP</div>
+                <div class="segmented-item" onclick="setGenre('K-POP', 1)">K-POP</div>
+            </div>
+
+            <input type="text" id="searchInput" onkeyup="renderSongs()" placeholder="곡명, 가수 검색..." class="apple-input">
         </div>
     </header>
 
-    <main class="px-6 max-w-md mx-auto mt-4">
-        <div class="mb-6">
-            <input type="text" id="searchInput" onkeyup="renderSongs()" placeholder="곡명, 가수 검색..." class="apple-input shadow-sm">
-        </div>
-
+    <main class="px-6 max-w-md mx-auto mt-2">
         <div id="songList" class="space-y-4">
             </div>
     </main>
@@ -87,84 +113,116 @@
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="toggleModal()"></div>
         <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[30px] p-8 max-h-[90vh] overflow-y-auto">
             <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-6"></div>
-            <h2 class="text-xl font-bold mb-6">노래 추가하기</h2>
+            <h2 class="text-xl font-bold mb-6">노래 정보 입력</h2>
             
             <div class="space-y-4">
-                <div>
-                    <label class="text-xs font-semibold text-gray-500 ml-1">곡 제목 (일본어/원어)</label>
-                    <input type="text" id="titleJP" class="apple-input" placeholder="例: 怪獣の花唄">
+                <div class="flex gap-2 p-1 bg-gray-100 rounded-xl mb-2">
+                    <button id="form-jpop" onclick="setFormType('J-POP')" class="flex-1 py-2 rounded-lg text-sm font-bold bg-white shadow-sm">J-POP</button>
+                    <button id="form-kpop" onclick="setFormType('K-POP')" class="flex-1 py-2 rounded-lg text-sm font-bold text-gray-500">K-POP</button>
                 </div>
+
                 <div>
-                    <label class="text-xs font-semibold text-gray-500 ml-1">곡 제목 (한국어)</label>
-                    <input type="text" id="titleKR" class="apple-input" placeholder="괴수의 화노래">
+                    <label class="text-xs font-semibold text-gray-500 ml-1">곡 제목</label>
+                    <input type="text" id="titleMain" class="apple-input" placeholder="곡 제목을 입력하세요">
+                </div>
+                <div id="subTitleArea">
+                    <label class="text-xs font-semibold text-gray-500 ml-1">부제목 (발음/한국어명)</label>
+                    <input type="text" id="titleSub" class="apple-input" placeholder="예: 괴수의 화노래">
                 </div>
                 <div>
                     <label class="text-xs font-semibold text-gray-500 ml-1">가수</label>
-                    <input type="text" id="artist" class="apple-input" placeholder="Vaundy">
+                    <input type="text" id="artist" class="apple-input">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-xs font-semibold text-gray-500 ml-1">TJ 번호</label>
-                        <input type="number" id="noTJ" class="apple-input" placeholder="번호">
+                        <input type="text" id="noTJ" class="apple-input" placeholder="번호">
                     </div>
                     <div>
                         <label class="text-xs font-semibold text-gray-500 ml-1">금영 번호</label>
-                        <input type="number" id="noKY" class="apple-input" placeholder="번호">
+                        <input type="text" id="noKY" class="apple-input" placeholder="번호">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-gray-500 ml-1">가사 및 발음 (메모)</label>
-                    <textarea id="lyrics" class="apple-input h-24" placeholder="무네니 히비쿠..."></textarea>
+                    <label class="text-xs font-semibold text-gray-500 ml-1">메모 (가사 발음 등)</label>
+                    <textarea id="lyrics" class="apple-input h-24"></textarea>
                 </div>
-                <button onclick="addSong()" class="w-full py-4 btn-primary mt-4">저장하기</button>
+                <button onclick="addSong()" class="w-full py-4 btn-primary mt-2">저장하기</button>
             </div>
         </div>
     </div>
 
     <script>
-        let songs = JSON.parse(localStorage.getItem('jpop-songs')) || [];
+        let songs = JSON.parse(localStorage.getItem('my-karaoke-songs')) || [];
+        let currentViewGenre = 'J-POP';
+        let currentFormGenre = 'J-POP';
+
+        function setGenre(genre, index) {
+            currentViewGenre = genre;
+            const slider = document.getElementById('slider');
+            const items = document.querySelectorAll('.segmented-item');
+            
+            if(index === 0) slider.classList.remove('right');
+            else slider.classList.add('right');
+            
+            items.forEach((item, i) => {
+                if(i === index) item.classList.add('active');
+                else item.classList.remove('active');
+            });
+            renderSongs();
+        }
+
+        function setFormType(genre) {
+            currentFormGenre = genre;
+            const jBtn = document.getElementById('form-jpop');
+            const kBtn = document.getElementById('form-kpop');
+            const subArea = document.getElementById('subTitleArea');
+
+            if(genre === 'J-POP') {
+                jBtn.classList.add('bg-white', 'shadow-sm'); jBtn.classList.remove('text-gray-500');
+                kBtn.classList.remove('bg-white', 'shadow-sm'); kBtn.classList.add('text-gray-500');
+                subArea.style.display = 'block';
+            } else {
+                kBtn.classList.add('bg-white', 'shadow-sm'); kBtn.classList.remove('text-gray-500');
+                jBtn.classList.remove('bg-white', 'shadow-sm'); jBtn.classList.add('text-gray-500');
+                subArea.style.display = 'none';
+            }
+        }
 
         function toggleModal() {
             const modal = document.getElementById('modal');
             modal.classList.toggle('hidden');
-            if(modal.classList.contains('hidden')) resetForm();
-        }
-
-        function resetForm() {
-            document.querySelectorAll('.apple-input').forEach(input => input.value = '');
+            if(modal.classList.contains('hidden')) {
+                document.querySelectorAll('.apple-input').forEach(i => i.value = '');
+            }
         }
 
         function addSong() {
             const song = {
                 id: Date.now(),
-                titleJP: document.getElementById('titleJP').value,
-                titleKR: document.getElementById('titleKR').value,
+                genre: currentFormGenre,
+                titleMain: document.getElementById('titleMain').value,
+                titleSub: document.getElementById('titleSub').value,
                 artist: document.getElementById('artist').value,
                 noTJ: document.getElementById('noTJ').value || '-',
                 noKY: document.getElementById('noKY').value || '-',
                 lyrics: document.getElementById('lyrics').value
             };
 
-            if(!song.titleJP || !song.artist) {
-                alert('제목과 가수는 필수입니다!');
-                return;
-            }
+            if(!song.titleMain || !song.artist) return alert('제목과 가수는 필수입니다.');
 
             songs.unshift(song);
-            saveAndRender();
+            localStorage.setItem('my-karaoke-songs', JSON.stringify(songs));
+            renderSongs();
             toggleModal();
         }
 
         function deleteSong(id) {
-            if(confirm('정말 삭제하시겠습니까?')) {
+            if(confirm('이 곡을 삭제할까요?')) {
                 songs = songs.filter(s => s.id !== id);
-                saveAndRender();
+                localStorage.setItem('my-karaoke-songs', JSON.stringify(songs));
+                renderSongs();
             }
-        }
-
-        function saveAndRender() {
-            localStorage.setItem('jpop-songs', JSON.stringify(songs));
-            renderSongs();
         }
 
         function renderSongs() {
@@ -172,44 +230,37 @@
             const container = document.getElementById('songList');
             container.innerHTML = '';
 
-            const filteredSongs = songs.filter(s => 
-                s.titleJP.toLowerCase().includes(searchTerm) || 
-                s.titleKR.toLowerCase().includes(searchTerm) || 
-                s.artist.toLowerCase().includes(searchTerm)
+            const filtered = songs.filter(s => 
+                s.genre === currentViewGenre && 
+                (s.titleMain.toLowerCase().includes(searchTerm) || s.artist.toLowerCase().includes(searchTerm))
             );
 
-            filteredSongs.forEach(song => {
+            filtered.forEach(song => {
                 container.innerHTML += `
-                    <div class="apple-card p-5 song-item relative group">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900">${song.titleJP}</h3>
-                                <p class="text-sm text-gray-500">${song.titleKR} · ${song.artist}</p>
+                    <div class="apple-card p-5 song-item">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h3 class="text-lg font-bold">${song.titleMain}</h3>
+                                <p class="text-sm text-gray-500">
+                                    ${song.genre === 'J-POP' && song.titleSub ? song.titleSub + ' · ' : ''}${song.artist}
+                                </p>
                             </div>
-                            <button onclick="deleteSong(${song.id})" class="text-gray-300 hover:text-red-500 transition-colors">
-                                <i class="fas fa-times-circle"></i>
-                            </button>
+                            <button onclick="deleteSong(${song.id})" class="ml-2 text-gray-300 hover:text-red-500"><i class="fas fa-times-circle"></i></button>
                         </div>
-                        
                         <div class="flex gap-2 my-3">
-                            <div class="badge-tj px-3 py-1 rounded-full text-xs font-bold">TJ ${song.noTJ}</div>
-                            <div class="badge-ky px-3 py-1 rounded-full text-xs font-bold">KY ${song.noKY}</div>
+                            <span class="badge-tj px-3 py-1 rounded-full text-[11px] font-bold">TJ ${song.noTJ}</span>
+                            <span class="badge-ky px-3 py-1 rounded-full text-[11px] font-bold">KY ${song.noKY}</span>
                         </div>
-
-                        ${song.lyrics ? `
-                        <div class="mt-3 p-3 bg-white/50 rounded-lg text-sm text-gray-600 leading-relaxed italic">
-                            ${song.lyrics.replace(/\n/g, '<br>')}
-                        </div>` : ''}
+                        ${song.lyrics ? `<div class="mt-2 p-3 bg-gray-50/50 rounded-xl text-sm text-gray-600 italic whitespace-pre-line">${song.lyrics}</div>` : ''}
                     </div>
                 `;
             });
 
-            if(filteredSongs.length === 0) {
-                container.innerHTML = `<div class="text-center py-20 text-gray-400">등록된 곡이 없거나<br>검색 결과가 없습니다.</div>`;
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 text-gray-400 font-light">등록된 ${currentViewGenre} 노래가 없습니다.</div>`;
             }
         }
 
-        // Initial Render
         renderSongs();
     </script>
 </body>
