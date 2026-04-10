@@ -24,6 +24,7 @@
             --ios-subtext: #8E96A3;
             --ios-blue: #74B9FF;
             --ios-heart: #FF8787;
+            --ios-highlight: #FEF08A; /* 파스텔 노란색 형광펜 */
             --spring-easing: cubic-bezier(0.2, 1, 0.2, 1);
             --side-padding: 24px;
         }
@@ -37,45 +38,49 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* [헤더 구조 수정] height를 고정하지 않고 내용에 따라 가변적으로 작동 */
+        /* [헤더] */
         .ios-header {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
             background: var(--ios-header-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             padding-top: env(safe-area-inset-top);
-            border-bottom: 1px solid transparent;
         }
         .header-main { padding: 32px var(--side-padding) 12px; }
         .header-title { font-size: 34px; font-weight: 800; letter-spacing: -0.05em; }
 
-        /* 홈 전용 애드온: 탭 전환 시 display: none으로 공간 점유를 제거 */
         #homeHeaderAddon { display: block; padding-bottom: 15px; }
         .search-container { padding: 0 var(--side-padding) 16px; }
         .search-box { background: var(--cool-gray-bg); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; }
         
-        .category-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 0 var(--side-padding) 4px; }
+        /* [카테고리 폭 고정 수정] */
+        .category-scroll { 
+            display: flex; gap: 8px; overflow-x: auto; 
+            padding: 0 var(--side-padding) 4px; 
+            scroll-behavior: smooth;
+        }
         .category-scroll::-webkit-scrollbar { display: none; }
         .filter-pill {
-            flex-shrink: 0; padding: 7px 16px; border-radius: 18px;
-            font-size: 14px; font-weight: 600; background: var(--cool-gray-bg);
-            color: var(--ios-subtext); transition: 0.2s;
+            flex: 0 0 85px; /* 폭을 85px로 완전 고정 */
+            height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 18px; font-size: 13px; font-weight: 600; 
+            background: var(--cool-gray-bg); color: var(--ios-subtext); 
+            transition: background 0.2s, color 0.2s;
         }
         .filter-pill.active { background: var(--ios-text); color: #fff; }
+        /* 즐겨찾기 버튼만 아이콘 때문에 조금 더 넓게 설정 */
+        .filter-pill.fav-pill { flex: 0 0 100px; }
 
-        /* [탭 페이지 여백 최적화] */
+        /* [페이지 레이아웃] */
         .tab-page { display: none; padding: 0 var(--side-padding) 140px; min-height: 100vh; }
-        
-        /* 헤더가 고정이 아닌 relative 역할을 하므로 각 페이지 상단 여백을 헤더 높이에 맞춤 */
         .tab-page.active { display: block; }
 
-        /* [공통 요소] */
         .ios-input { background: var(--cool-gray-bg); border-radius: 14px; padding: 16px; width: 100%; outline: none; font-size: 16px; border: 1.5px solid transparent; }
         .ios-input:focus { background: #fff; border-color: var(--cool-gray-border); }
-        .song-card { background: var(--cool-gray-bg); border-radius: 20px; padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .song-card:active { transform: scale(0.98); background: var(--cool-gray-dark); }
+        .song-card { background: var(--cool-gray-bg); border-radius: 20px; padding: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* [툴바 디자인 - 화이트 박스 + 회색 테두리] */
+        /* [툴바 디자인] */
         .pro-toolbar { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding: 4px 0; }
         .pro-toolbar::-webkit-scrollbar { display: none; }
         .tool-box {
@@ -124,7 +129,7 @@
                 </div>
             </div>
             <div class="category-scroll">
-                <button onclick="setFilter('FAV')" class="filter-pill"><i class="fas fa-heart mr-1 text-[var(--ios-heart)]"></i>즐겨찾기</button>
+                <button onclick="setFilter('FAV')" class="filter-pill fav-pill"><i class="fas fa-heart mr-1 text-[var(--ios-heart)]"></i>즐겨찾기</button>
                 <button onclick="setFilter('ALL')" class="filter-pill active">전체</button>
                 <button onclick="setFilter('J-POP')" class="filter-pill">J-POP</button>
                 <button onclick="setFilter('K-POP')" class="filter-pill">K-POP</button>
@@ -158,7 +163,7 @@
                 <div class="tool-box" onclick="execCmd('removeFormat')"><i class="fas fa-eraser"></i></div>
                 <div class="tool-box" onclick="execCmd('foreColor', '#FF8787')"><div class="color-dot bg-[#FF8787]"></div></div>
                 <div class="tool-box" onclick="execCmd('foreColor', '#74B9FF')"><div class="color-dot bg-[#74B9FF]"></div></div>
-                <div class="tool-box" onclick="execCmd('foreColor', '#7BE38E')"><div class="color-dot bg-[#7BE38E]"></div></div>
+                <div class="tool-box" onclick="execCmd('hiliteColor', '#FEF08A')"><div class="color-dot bg-[#FEF08A]"></div></div>
                 <div class="tool-box" onclick="execCmd('foreColor', '#1C1E21')"><div class="color-dot bg-[#1C1E21]"></div></div>
             </div>
             
@@ -173,7 +178,7 @@
             <div onclick="exportData()" class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 백업</span><i class="fas fa-download text-blue-400"></i></div>
             <label class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 복구</span><input type="file" onchange="importData(this)" class="hidden"><i class="fas fa-upload text-blue-400"></i></label>
             <div onclick="clearData()" class="ios-input flex justify-between items-center text-red-400 cursor-pointer"><span>모든 데이터 초기화</span><i class="fas fa-trash-alt"></i></div>
-            <div class="pt-24 text-center opacity-30 text-[10px] uppercase font-bold tracking-tighter">Version 6.6.0 Stable</div>
+            <div class="pt-24 text-center opacity-30 text-[10px] uppercase font-bold tracking-tighter">Version 6.7.0 Fixed Width</div>
         </div>
     </div>
 
@@ -216,7 +221,6 @@
             const titleMap = { 'home': '보관함', 'add': '노래 등록', 'more': '설정' };
             document.getElementById('pageTitle').innerText = titleMap[tabId];
             
-            // 핵심: 가변 높이 대신 display 조절로 불필요한 공간 제거
             const addon = document.getElementById('homeHeaderAddon');
             if(tabId === 'home') {
                 addon.style.display = "block";
@@ -289,7 +293,8 @@
             currentFilter = f;
             document.querySelectorAll('.filter-pill').forEach(btn => {
                 const isMatch = (f === 'ALL' && btn.innerText === '전체') || (f === 'FAV' && btn.innerText.includes('즐겨찾기')) || btn.innerText === f;
-                btn.className = `filter-pill shrink-0 px-5 py-2 rounded-full text-sm font-semibold ${isMatch ? 'active' : ''}`;
+                if (isMatch) btn.classList.add('active');
+                else btn.classList.remove('active');
             });
             renderList();
         }
