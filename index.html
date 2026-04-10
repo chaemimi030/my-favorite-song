@@ -7,7 +7,7 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/180/007AFF/headphones.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/180/74B9FF/headphones.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,11 +15,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;700&display=swap');
         
         :root {
-            --ios-blue: #007AFF;
+            --ios-blue: #74B9FF; /* 연한 소프트 블루 */
             --ios-bg: #FFFFFF;
             --ios-secondary: #F2F2F7;
-            --ios-text: #000000;
+            --ios-text: #1C1C1E;
             --ios-card: #FFFFFF;
+            --ios-heart: #FF8787; /* 연한 소프트 레드 */
             --spring-easing: cubic-bezier(0.2, 1, 0.2, 1);
         }
 
@@ -27,7 +28,7 @@
             --ios-bg: #000000;
             --ios-secondary: #1C1C1E;
             --ios-text: #FFFFFF;
-            --ios-card: #1C1C1E;
+            --ios-card: #2C2C2E;
         }
 
         body {
@@ -40,7 +41,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* [고정 헤더 구조] 카테고리 흔들림 방지 */
+        /* 헤더 고정 (카테고리 포함) */
         .ios-header {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
             background: rgba(var(--header-bg, 255, 255, 255), 0.7);
@@ -57,42 +58,43 @@
         }
         .category-scroll::-webkit-scrollbar { display: none; }
 
-        /* [애플 스타일 버튼] */
         .filter-pill {
-            flex-shrink: 0; padding: 8px 20px; border-radius: 20px;
+            flex-shrink: 0; padding: 8px 18px; border-radius: 20px;
             font-size: 14px; font-weight: 600; background: var(--ios-secondary);
             color: #8E8E93; transition: all 0.4s var(--spring-easing);
         }
         .filter-pill.active {
             background: var(--ios-text); color: var(--ios-bg);
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
-        /* [애플 토글 스위치] */
-        .apple-switch {
-            width: 51px; height: 31px; background: #E9E9EB; border-radius: 31px;
-            position: relative; transition: background-color 0.3s;
-        }
-        .apple-switch::before {
-            content: ''; position: absolute; width: 27px; height: 27px;
-            background: #fff; border-radius: 50%; top: 2px; left: 2px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-            transition: transform 0.3s var(--spring-easing);
-        }
-        .apple-switch.on { background: #34C759; }
-        .apple-switch.on::before { transform: translateX(20px); }
-
-        /* 리스트 컨텐츠 영역 */
-        .main-content { margin-top: 200px; padding: 0 24px 120px; }
+        /* 메인 컨텐츠 영역 */
+        .tab-page { display: none; padding-top: 185px; padding-bottom: 120px; }
+        .tab-page.active { display: block; animation: tabFade 0.4s var(--spring-easing); }
+        @keyframes tabFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .song-card {
             background: var(--ios-secondary); border-radius: 22px; padding: 20px;
             margin-bottom: 12px; display: flex; justify-content: space-between;
             align-items: center; transition: all 0.4s var(--spring-easing);
         }
-        .song-card:active { transform: scale(0.95); opacity: 0.7; }
+        .song-card:active { transform: scale(0.96); opacity: 0.7; }
 
-        /* 하단 탭 바 */
+        /* 애플 토글 */
+        .apple-switch {
+            width: 51px; height: 31px; background: #E9E9EB; border-radius: 31px;
+            position: relative; transition: background-color 0.3s; cursor: pointer;
+        }
+        .apple-switch::before {
+            content: ''; position: absolute; width: 27px; height: 27px;
+            background: #fff; border-radius: 50%; top: 2px; left: 2px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s var(--spring-easing);
+        }
+        .apple-switch.on { background: #7BE38E; } /* 연한 그린 */
+        .apple-switch.on::before { transform: translateX(20px); }
+
+        /* 하단 플로팅 탭 바 */
         .bottom-nav {
             position: fixed; bottom: 30px; left: 24px; right: 24px;
             background: rgba(var(--nav-bg, 0, 0, 0), 0.08);
@@ -100,8 +102,8 @@
             border-radius: 35px; display: flex; padding: 6px; z-index: 2000;
         }
         body.dark .bottom-nav { --nav-bg: 255, 255, 255; }
-        .nav-item { flex: 1; padding: 14px 0; border-radius: 30px; transition: all 0.3s; color: #8E8E93; text-align: center; }
-        .nav-item.active { background: var(--ios-card); color: var(--ios-blue); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .nav-item { flex: 1; padding: 14px 0; border-radius: 30px; transition: all 0.3s; color: #8E8E93; text-align: center; cursor: pointer; }
+        .nav-item.active { background: var(--ios-card); color: var(--ios-blue); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
         /* 가사 팝업 */
         .slide-up {
@@ -111,26 +113,22 @@
         }
         .slide-up.active { transform: translate3d(0, 44px, 0); }
 
-        #lyricsEditor { 
-            min-height: 250px; background: var(--ios-secondary); border-radius: 22px; 
-            padding: 20px; outline: none; transition: all 0.3s;
-        }
-        
-        .tool-bar {
-            display: flex; background: var(--ios-text); border-radius: 20px;
-            padding: 8px; margin-bottom: 15px; justify-content: space-around;
-        }
-        .tool-btn { color: var(--ios-bg); font-size: 18px; }
+        .ios-input { background: var(--ios-secondary); border-radius: 18px; padding: 16px; width: 100%; outline: none; color: var(--ios-text); }
+        #lyricsEditor { min-height: 250px; background: var(--ios-secondary); border-radius: 22px; padding: 20px; outline: none; color: var(--ios-text); }
 
-        .text-heart { color: #FF2D55; }
+        .tool-bar { display: flex; background: var(--ios-text); border-radius: 20px; padding: 8px; margin-bottom: 15px; justify-content: space-around; }
+        .tool-btn { color: var(--ios-bg); font-size: 18px; opacity: 0.8; }
+
+        .text-heart { color: var(--ios-heart); }
+        .tag-jpop { color: #FFADAD; } .tag-kpop { color: #A0C4FF; } .tag-cpop { color: #FFD6A5; }
     </style>
 </head>
-<body class="light">
+<body>
 
-    <header class="ios-header">
+    <header class="ios-header" id="mainHeader">
         <div class="header-content">
             <h1 class="text-4xl font-bold tracking-tighter mb-5">보관함</h1>
-            <div class="flex items-center bg-black/5 dark:bg-white/10 rounded-2xl px-4 py-3 shadow-inner">
+            <div class="flex items-center bg-black/5 dark:bg-white/10 rounded-2xl px-4 py-3">
                 <i class="fas fa-search text-gray-400 mr-3"></i>
                 <input type="text" id="searchInput" oninput="renderList()" placeholder="검색" class="bg-transparent border-none outline-none w-full text-lg">
             </div>
@@ -144,15 +142,18 @@
         </div>
     </header>
 
-    <main class="main-content" id="mainList"></main>
+    <div id="tab-home" class="tab-page active px-6">
+        <div id="mainList"></div>
+    </div>
 
-    <div id="tab-add" class="tab-content px-6 pt-16 hidden pb-40">
+    <div id="tab-add" class="tab-page px-6">
         <h2 id="formTitle" class="text-3xl font-bold mb-8">새로운 노래</h2>
         <div class="flex p-1.5 bg-gray-100 dark:bg-white/10 rounded-2xl mb-8">
             <button onclick="setFormGenre('J-POP')" id="btnJ" class="flex-1 py-3 rounded-xl text-xs font-bold bg-white dark:bg-zinc-800 shadow-sm">J-POP</button>
             <button onclick="setFormGenre('K-POP')" id="btnK" class="flex-1 py-3 rounded-xl text-xs font-bold text-gray-400">K-POP</button>
             <button onclick="setFormGenre('C-POP')" id="btnC" class="flex-1 py-3 rounded-xl text-xs font-bold text-gray-400">C-POP</button>
         </div>
+        <input type="hidden" id="editingId">
         <div class="space-y-4">
             <input type="text" id="inTitle" class="ios-input shadow-sm" placeholder="제목">
             <input type="text" id="inSubTitle" class="ios-input shadow-sm" placeholder="발음/부제">
@@ -163,27 +164,27 @@
             </div>
             <div class="tool-bar">
                 <button onclick="execCmd('bold')" class="tool-btn"><i class="fas fa-bold"></i></button>
-                <button onclick="execCmd('foreColor', '#FF3B30')" class="tool-btn text-red-500"><i class="fas fa-paint-brush"></i></button>
-                <button onclick="execCmd('foreColor', '#007AFF')" class="tool-btn text-blue-500"><i class="fas fa-paint-brush"></i></button>
+                <button onclick="execCmd('foreColor', '#FFADAD')" class="tool-btn"><i class="fas fa-paint-brush"></i></button>
+                <button onclick="execCmd('foreColor', '#A0C4FF')" class="tool-btn"><i class="fas fa-paint-brush"></i></button>
                 <button onclick="execCmd('foreColor', 'inherit')" class="tool-btn"><i class="fas fa-undo"></i></button>
             </div>
-            <div id="lyricsEditor" contenteditable="true"></div>
+            <div id="lyricsEditor" contenteditable="true" placeholder="가사를 입력하세요..."></div>
             <button onclick="saveSong()" id="saveBtn" class="w-full py-5 bg-black dark:bg-white dark:text-black text-white rounded-3xl font-bold text-xl active:scale-95 transition-all">등록하기</button>
-            <button id="cancelEdit" onclick="cancelEditing()" class="hidden w-full py-4 text-gray-400 font-semibold">수정 취소</button>
+            <button id="cancelEditBtn" onclick="cancelEditing()" class="hidden w-full py-4 text-gray-400 font-semibold">수정 취소</button>
         </div>
     </div>
 
-    <div id="tab-more" class="tab-content px-6 pt-16 hidden">
+    <div id="tab-more" class="tab-page px-6">
         <h2 class="text-3xl font-bold mb-10">설정</h2>
         <div class="space-y-4">
             <div class="ios-input flex justify-between items-center" onclick="toggleDarkMode()">
                 <span>다크 모드</span>
                 <div id="darkSwitch" class="apple-switch"></div>
             </div>
-            <div onclick="exportData()" class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 백업</span><i class="fas fa-download text-blue-500"></i></div>
-            <label class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 복구</span><input type="file" onchange="importData(this)" class="hidden"><i class="fas fa-upload text-blue-500"></i></label>
-            <div onclick="clearData()" class="ios-input flex justify-between items-center text-red-500 cursor-pointer"><span>전체 데이터 초기화</span><i class="fas fa-trash-alt"></i></div>
-            <div class="pt-20 text-center opacity-30 text-[10px] uppercase font-black tracking-widest">Version 5.0.0 Pure iOS</div>
+            <div onclick="exportData()" class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 백업</span><i class="fas fa-download text-blue-300"></i></div>
+            <label class="ios-input flex justify-between items-center cursor-pointer"><span>데이터 복구</span><input type="file" onchange="importData(this)" class="hidden"><i class="fas fa-upload text-blue-300"></i></label>
+            <div onclick="clearData()" class="ios-input flex justify-between items-center text-red-300 cursor-pointer"><span>초기화</span><i class="fas fa-trash-alt"></i></div>
+            <div class="pt-20 text-center opacity-30 text-[10px] uppercase font-black tracking-widest">Version 5.1.0 Soft Pastel</div>
         </div>
     </div>
 
@@ -199,7 +200,7 @@
                 <button id="popFavBtn" class="text-2xl"><i class="fas fa-heart"></i></button>
             </div>
         </header>
-        <div id="popContent" class="flex-1 overflow-y-auto px-8 py-6 text-xl leading-relaxed tracking-tight"></div>
+        <div id="popContent" class="flex-1 overflow-y-auto px-8 py-6 text-xl leading-relaxed tracking-tight rich-content"></div>
         <div class="px-8 pt-6 pb-14 bg-gray-50/50 dark:bg-white/5 flex gap-5">
             <div class="flex-1 text-center"><span class="block text-[10px] font-bold text-gray-400 mb-1">TJ MEDIA</span><span id="popTJ" class="text-2xl font-black italic"></span></div>
             <div class="flex-1 text-center border-l dark:border-white/10"><span class="block text-[10px] font-bold text-gray-400 mb-1">KUMYOUNG</span><span id="popKY" class="text-2xl font-black italic"></span></div>
@@ -218,13 +219,13 @@
         let formGenre = 'J-POP';
         let isDarkMode = localStorage.getItem('dark_mode') === 'true';
 
-        // 다크모드 토글 및 로직
         function initDarkMode() {
             if (isDarkMode) {
                 document.body.classList.add('dark');
                 document.getElementById('darkSwitch').classList.add('on');
             }
         }
+
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('dark');
@@ -232,12 +233,23 @@
             localStorage.setItem('dark_mode', isDarkMode);
         }
 
+        // 탭 전환 로직 (완벽 수정)
         function switchTab(tabId, el) {
-            document.querySelectorAll('.tab-content, #tab-home').forEach(t => t.classList.add('hidden'));
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            // 모든 페이지 숨기기
+            document.querySelectorAll('.tab-page').forEach(page => page.classList.remove('active'));
+            // 모든 탭 아이콘 비활성화
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            // 선택한 페이지 및 탭 활성화
+            document.getElementById('tab-' + tabId).classList.add('active');
             el.classList.add('active');
+
+            // 홈 탭일 때만 상단 고정 헤더 보이기
+            const header = document.getElementById('mainHeader');
+            header.style.display = (tabId === 'home') ? 'block' : 'none';
+
             if(tabId === 'home') renderList();
+            if(tabId !== 'add') cancelEditing();
             window.scrollTo(0,0);
         }
 
@@ -251,21 +263,22 @@
         function saveSong() {
             const title = document.getElementById('inTitle').value.trim();
             const artist = document.getElementById('inArtist').value.trim();
-            const editId = document.getElementById('editingId');
+            const editId = document.getElementById('editingId').value;
             if(!title || !artist) return alert('제목과 가수를 입력해주세요.');
 
             const data = {
-                id: editId.value ? parseInt(editId.value) : Date.now(),
+                id: editId ? parseInt(editId) : Date.now(),
                 genre: formGenre, title, sub: document.getElementById('inSubTitle').value,
                 artist, tj: document.getElementById('inTJ').value || '-', ky: document.getElementById('inKY').value || '-',
                 lyrics: document.getElementById('lyricsEditor').innerHTML,
-                fav: editId.value ? songs.find(s => s.id === parseInt(editId.value)).fav : false
+                fav: editId ? songs.find(s => s.id === parseInt(editId)).fav : false
             };
 
-            if(editId.value) songs[songs.findIndex(s => s.id === data.id)] = data;
+            if(editId) songs[songs.findIndex(s => s.id === data.id)] = data;
             else songs.unshift(data);
 
             localStorage.setItem('karaoke_v5_data', JSON.stringify(songs));
+            alert(editId ? '수정되었습니다.' : '저장되었습니다.');
             location.reload();
         }
 
@@ -279,11 +292,12 @@
                 return match && s.genre === currentFilter;
             });
 
-            container.innerHTML = filtered.length ? '' : '<div class="text-center py-40 opacity-20 font-bold italic">NO DATA</div>';
+            container.innerHTML = filtered.length ? '' : '<div class="text-center py-40 opacity-20 font-bold italic">데이터가 없습니다</div>';
             filtered.forEach(s => {
                 const card = document.createElement('div');
                 card.className = 'song-card shadow-sm';
                 card.onclick = () => showLyrics(s.id);
+                const genreClass = s.genre === 'J-POP' ? 'tag-jpop' : (s.genre === 'K-POP' ? 'tag-kpop' : 'tag-cpop');
                 card.innerHTML = `
                     <div class="overflow-hidden pr-4">
                         <div class="flex items-center gap-1.5">
@@ -291,10 +305,11 @@
                             <h4 class="font-bold text-xl tracking-tight truncate">${s.title}</h4>
                         </div>
                         <p class="text-xs text-gray-400 mt-1 truncate">${s.sub ? s.sub + ' · ' : ''}${s.artist}</p>
+                        <span class="${genreClass} text-[9px] font-bold uppercase tracking-wider">${s.genre}</span>
                     </div>
                     <div class="shrink-0 text-right opacity-80">
-                        <div class="text-[11px] font-black italic text-red-500">${s.tj}</div>
-                        <div class="text-[11px] font-black italic text-green-600">${s.ky}</div>
+                        <div class="text-[11px] font-black italic text-red-300">${s.tj}</div>
+                        <div class="text-[11px] font-black italic text-green-300">${s.ky}</div>
                     </div>
                 `;
                 container.appendChild(card);
@@ -318,10 +333,13 @@
             document.getElementById('popKY').innerText = song.ky;
             document.getElementById('popContent').innerHTML = song.lyrics;
             const favBtn = document.getElementById('popFavBtn');
-            favBtn.style.color = song.fav ? '#FF2D55' : '#E5E5EA';
+            favBtn.style.color = song.fav ? '#FF8787' : '#E5E5EA';
             favBtn.onclick = () => { song.fav = !song.fav; localStorage.setItem('karaoke_v5_data', JSON.stringify(songs)); showLyrics(id); };
+            
             document.getElementById('popEditBtn').onclick = () => {
-                closeLyrics(); switchTab('add', document.querySelectorAll('.nav-item')[1]);
+                closeLyrics();
+                switchTab('add', document.querySelectorAll('.nav-item')[1]);
+                document.getElementById('formTitle').innerText = '정보 수정';
                 document.getElementById('editingId').value = song.id;
                 document.getElementById('inTitle').value = song.title;
                 document.getElementById('inSubTitle').value = song.sub;
@@ -329,7 +347,7 @@
                 document.getElementById('inTJ').value = song.tj;
                 document.getElementById('inKY').value = song.ky;
                 document.getElementById('lyricsEditor').innerHTML = song.lyrics;
-                document.getElementById('cancelEdit').classList.remove('hidden');
+                document.getElementById('cancelEditBtn').classList.remove('hidden');
                 document.getElementById('saveBtn').innerText = '수정 완료';
                 setFormGenre(song.genre);
             };
@@ -337,8 +355,20 @@
         }
 
         function closeLyrics() { document.getElementById('lyricPopup').classList.remove('active'); }
+        function cancelEditing() {
+            document.getElementById('formTitle').innerText = '새로운 노래';
+            document.getElementById('editingId').value = '';
+            document.getElementById('inTitle').value = '';
+            document.getElementById('inSubTitle').value = '';
+            document.getElementById('inArtist').value = '';
+            document.getElementById('inTJ').value = '';
+            document.getElementById('inKY').value = '';
+            document.getElementById('lyricsEditor').innerHTML = '';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('saveBtn').innerText = '등록하기';
+        }
         function execCmd(c,v=null) { document.execCommand(c,false,v); }
-        function exportData() { const b=new Blob([JSON.stringify(songs)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='karaoke.json'; a.click(); }
+        function exportData() { const b=new Blob([JSON.stringify(songs)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='karaoke_backup.json'; a.click(); }
         function importData(i) { const r=new FileReader(); r.onload=(e)=>{ songs=JSON.parse(e.target.result); localStorage.setItem('karaoke_v5_data',JSON.stringify(songs)); location.reload(); }; r.readAsText(i.files[0]); }
         function clearData() { if(confirm('모든 데이터를 삭제할까요?')) { localStorage.removeItem('karaoke_v5_data'); location.reload(); } }
 
