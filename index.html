@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Karaoke Pro v3.0</title>
+    <title>Karaoke Pro</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/ios-filled/180/007AFF/headphones.png">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/50/007AFF/headphones.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -18,7 +24,6 @@
             overscroll-behavior-y: none;
         }
 
-        /* 헤더 고정 및 블러 */
         .glass-header {
             position: sticky;
             top: 0; z-index: 50;
@@ -28,7 +33,6 @@
             border-bottom: 0.5px solid rgba(0,0,0,0.05);
         }
 
-        /* 탭 바 */
         .bottom-nav {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -42,7 +46,6 @@
         .nav-item.active { color: var(--apple-blue); }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 2px; }
 
-        /* 애니메이션 최적화 */
         .slide-up {
             position: fixed; inset: 0; background: white; z-index: 200;
             transform: translate3d(0, 100%, 0);
@@ -51,7 +54,6 @@
         }
         .slide-up.active { transform: translate3d(0, 0, 0); }
 
-        /* 카드 디자인 */
         .song-card {
             background: #FFFFFF; border-radius: 14px; padding: 16px;
             margin-bottom: 12px; display: flex; justify-content: space-between;
@@ -66,17 +68,16 @@
             padding: 16px; outline: none; border: 1px solid #E5E5EA;
         }
 
-        /* 장르별 포인트 컬러 */
-        .tag-jpop { color: #FF3B30; } /* 레드 */
-        .tag-kpop { color: #007AFF; } /* 블루 */
-        .tag-cpop { color: #FF9500; } /* 오렌지 */
+        .tag-jpop { color: #FF3B30; } 
+        .tag-kpop { color: #007AFF; } 
+        .tag-cpop { color: #FF9500; }
     </style>
 </head>
 <body>
 
     <div id="tab-home" class="tab-content active">
         <header class="glass-header px-5 pt-10 pb-4">
-            <h1 class="text-3xl font-bold mb-4">My Archive</h1>
+            <h1 class="text-3xl font-bold mb-4">Archives</h1>
             <div class="flex items-center bg-gray-200/60 rounded-xl px-3 py-2.5 mb-4">
                 <i class="fas fa-search text-gray-400 mr-2"></i>
                 <input type="text" id="searchInput" oninput="renderList()" placeholder="제목 또는 가수 검색" class="bg-transparent border-none outline-none w-full text-base">
@@ -99,20 +100,17 @@
             <button onclick="setFormGenre('K-POP')" id="btnK" class="flex-1 py-2 rounded-lg text-xs font-bold text-gray-500">K-POP</button>
             <button onclick="setFormGenre('C-POP')" id="btnC" class="flex-1 py-2 rounded-lg text-xs font-bold text-gray-500">C-POP</button>
         </div>
-
         <div class="space-y-4">
-            <div id="formGuide" class="text-[11px] font-bold text-blue-500 px-1">J-POP: 원어 제목과 독음을 적어주세요.</div>
-            <input type="text" id="inTitle" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="제목 (원어)">
+            <div id="formGuide" class="text-[11px] font-bold text-blue-500 px-1">J-POP 양식으로 설정되었습니다.</div>
+            <input type="text" id="inTitle" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="제목">
             <input type="text" id="inSubTitle" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="부제목 (발음/한국어명)">
             <input type="text" id="inArtist" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="가수명">
-            
             <div class="grid grid-cols-2 gap-3">
                 <input type="text" id="inTJ" class="p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="TJ 번호">
                 <input type="text" id="inKY" class="p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="KY 번호">
             </div>
-
-            <div id="lyricsEditor" contenteditable="true" class="bg-white shadow-sm" placeholder="가사를 붙여넣으세요 (색상 유지)"></div>
-            <button onclick="saveSong()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 active:scale-95 transition-transform">리스트에 추가</button>
+            <div id="lyricsEditor" contenteditable="true" class="bg-white shadow-sm" placeholder="가사를 복사 붙여넣기 하세요"></div>
+            <button onclick="saveSong()" class="w-full py-4 bg-blue-500 text-white rounded-2xl font-bold text-lg active:scale-95 transition-transform">저장하기</button>
         </div>
     </div>
 
@@ -120,13 +118,13 @@
         <h2 class="text-2xl font-bold mb-6">설정</h2>
         <div class="bg-white rounded-2xl overflow-hidden shadow-sm border">
             <div onclick="exportData()" class="p-4 border-b flex justify-between items-center active:bg-gray-50">
-                <span>데이터 백업 (JSON)</span><i class="fas fa-file-export text-gray-300"></i>
+                <span>데이터 백업</span><i class="fas fa-file-export text-gray-300"></i>
             </div>
             <label class="p-4 border-b flex justify-between items-center active:bg-gray-50 cursor-pointer">
-                <span>데이터 복구 (파일 선택)</span><input type="file" onchange="importData(this)" class="hidden"><i class="fas fa-file-import text-gray-300"></i>
+                <span>데이터 복구</span><input type="file" onchange="importData(this)" class="hidden"><i class="fas fa-file-import text-gray-300"></i>
             </label>
             <div onclick="clearData()" class="p-4 flex justify-between items-center text-red-500 active:bg-gray-50">
-                <span>모든 데이터 초기화</span><i class="fas fa-trash-alt"></i>
+                <span>초기화</span><i class="fas fa-trash-alt"></i>
             </div>
         </div>
     </div>
@@ -143,11 +141,11 @@
         <div id="popContent" class="flex-1 overflow-y-auto p-6 rich-content text-[18px] leading-relaxed"></div>
         <div class="p-5 border-t bg-gray-50 flex gap-3">
             <div class="flex-1 bg-white p-3 rounded-xl text-center shadow-sm">
-                <span class="block text-[10px] font-bold text-red-500 mb-1 italic">TJ</span>
+                <span class="block text-[10px] font-bold text-red-500 mb-1">TJ</span>
                 <span id="popTJ" class="text-xl font-black italic"></span>
             </div>
             <div class="flex-1 bg-white p-3 rounded-xl text-center shadow-sm">
-                <span class="block text-[10px] font-bold text-green-500 mb-1 italic">KY</span>
+                <span class="block text-[10px] font-bold text-green-500 mb-1">KY</span>
                 <span id="popKY" class="text-xl font-black italic"></span>
             </div>
         </div>
@@ -164,7 +162,6 @@
         let currentFilter = 'ALL';
         let formGenre = 'J-POP';
 
-        // 탭 전환
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.getElementById('tab-' + tabId).classList.remove('hidden');
@@ -173,47 +170,30 @@
             if(tabId === 'home') renderList();
         }
 
-        // 입력 폼 장르 변경
         function setFormGenre(g) {
             formGenre = g;
             const btns = { 'J-POP': 'btnJ', 'K-POP': 'btnK', 'C-POP': 'btnC' };
-            const guides = {
-                'J-POP': 'J-POP: 원어 제목과 한국어 독음을 적어주세요.',
-                'K-POP': 'K-POP: 제목을 적어주세요. 부제목은 생략 가능합니다.',
-                'C-POP': 'C-POP: 한자 제목과 병음(Pinyin)을 적어주세요.'
-            };
-            
-            Object.values(btns).forEach(id => {
-                document.getElementById(id).className = 'flex-1 py-2 rounded-lg text-xs font-bold text-gray-500';
-            });
+            Object.values(btns).forEach(id => document.getElementById(id).className = 'flex-1 py-2 rounded-lg text-xs font-bold text-gray-500');
             document.getElementById(btns[g]).className = 'flex-1 py-2 rounded-lg text-xs font-bold bg-white shadow-sm';
-            document.getElementById('formGuide').innerText = guides[g];
+            document.getElementById('formGuide').innerText = `${g} 양식으로 설정되었습니다.`;
         }
 
-        // 노래 저장
         function saveSong() {
             const title = document.getElementById('inTitle').value.trim();
             const artist = document.getElementById('inArtist').value.trim();
             if(!title || !artist) return alert('제목과 가수는 필수입니다.');
-
             songs.unshift({
-                id: Date.now(),
-                genre: formGenre,
-                title,
+                id: Date.now(), genre: formGenre, title,
                 sub: document.getElementById('inSubTitle').value.trim(),
-                artist,
-                tj: document.getElementById('inTJ').value || '-',
+                artist, tj: document.getElementById('inTJ').value || '-',
                 ky: document.getElementById('inKY').value || '-',
-                lyrics: document.getElementById('lyricsEditor').innerHTML,
-                fav: false
+                lyrics: document.getElementById('lyricsEditor').innerHTML, fav: false
             });
-
             localStorage.setItem('karaoke_v3_data', JSON.stringify(songs));
             alert('저장되었습니다!');
             location.reload();
         }
 
-        // 필터 설정
         function setFilter(f) {
             currentFilter = f;
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -223,7 +203,6 @@
             renderList();
         }
 
-        // 리스트 렌더링 (최적화)
         function renderList() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const container = document.getElementById('mainList');
@@ -233,17 +212,13 @@
                 if(currentFilter === 'FAV') return match && s.fav;
                 return match && s.genre === currentFilter;
             });
-
             container.innerHTML = filtered.length ? '' : '<div class="text-center py-20 text-gray-400">데이터가 없습니다.</div>';
-            
             const frag = document.createDocumentFragment();
             filtered.forEach(s => {
                 const card = document.createElement('div');
                 card.className = 'song-card shadow-sm';
                 card.onclick = () => showLyrics(s.id);
-                
                 const genreClass = s.genre === 'J-POP' ? 'tag-jpop' : (s.genre === 'K-POP' ? 'tag-kpop' : 'tag-cpop');
-                
                 card.innerHTML = `
                     <div class="overflow-hidden pr-4">
                         <h4 class="font-bold text-[17px] truncate">${s.title}</h4>
@@ -260,7 +235,6 @@
             container.appendChild(frag);
         }
 
-        // 가사 보기
         function showLyrics(id) {
             const song = songs.find(s => s.id === id);
             document.getElementById('popTitle').innerText = song.title;
@@ -268,7 +242,6 @@
             document.getElementById('popTJ').innerText = song.tj;
             document.getElementById('popKY').innerText = song.ky;
             document.getElementById('popContent').innerHTML = song.lyrics;
-            
             const favBtn = document.getElementById('popFavBtn');
             favBtn.style.color = song.fav ? '#FFCC00' : '#E5E5EA';
             favBtn.onclick = () => {
@@ -281,12 +254,11 @@
 
         function closeLyrics() { document.getElementById('lyricPopup').classList.remove('active'); }
 
-        // 데이터 관리
         function exportData() {
             const blob = new Blob([JSON.stringify(songs)], {type: 'application/json'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `karaoke_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `karaoke_backup.json`;
             a.click();
         }
 
@@ -306,7 +278,6 @@
                 location.reload();
             }
         }
-
         renderList();
     </script>
 </body>
