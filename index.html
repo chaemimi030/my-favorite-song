@@ -3,164 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>노래방 애창곡 PRO</title>
+    <title>My 애창곡</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
-        body { font-family: 'Pretendard', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; }
-        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .active-nav { color: #2563eb !important; font-weight: 800; }
-        .brand-active { background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #111827; }
+        body { font-family: 'Pretendard', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #f8fafc; }
+        .active-brand { background-color: white; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); color: #1e40af; }
         ::-webkit-scrollbar { display: none; }
+        .tab-btn.active { color: #2563eb; border-bottom: 3px solid #2563eb; }
     </style>
 </head>
-<body class="bg-gray-100 flex justify-center">
+<body class="flex justify-center">
 
-    <div id="app" class="w-full max-w-md bg-white min-h-screen flex flex-col shadow-2xl relative overflow-hidden">
+    <div id="app" class="w-full max-w-md bg-white min-h-screen flex flex-col shadow-xl relative">
         
-        <header class="p-4 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b">
-            <div class="flex items-center justify-between">
-                <div class="flex bg-gray-100 p-1 rounded-xl w-36">
-                    <button onclick="setBrand('TJ')" id="brand-tj" class="brand-active flex-1 py-1 text-xs font-bold rounded-lg transition-all">TJ</button>
-                    <button onclick="setBrand('KY')" id="brand-ky" class="flex-1 py-1 text-xs font-bold rounded-lg transition-all text-gray-400">금영</button>
+        <header class="p-5 sticky top-0 bg-white/90 backdrop-blur-lg z-50 border-b">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-black text-gray-900 tracking-tight">My 애창곡</h1>
+                <div class="flex bg-gray-100 p-1 rounded-xl w-32">
+                    <button onclick="changeBrand('TJ')" id="btn-tj" class="active-brand flex-1 py-1.5 text-xs font-bold rounded-lg transition-all">TJ</button>
+                    <button onclick="changeBrand('KY')" id="btn-ky" class="flex-1 py-1.5 text-xs font-bold rounded-lg transition-all text-gray-400">금영</button>
                 </div>
-                <h1 id="page-title" class="text-lg font-extrabold text-gray-800">내 북마크</h1>
-                <div class="w-10"></div> </div>
+            </div>
+
+            <div class="flex border-b -mx-5 px-5">
+                <button onclick="showTab('search')" id="tab-search-btn" class="tab-btn active flex-1 py-3 font-bold text-gray-400 transition-all">곡 추가 (검색)</button>
+                <button onclick="showTab('bookmark')" id="tab-bookmark-btn" class="tab-btn flex-1 py-3 font-bold text-gray-400 transition-all">내 북마크</button>
+            </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto pb-24">
+        <main class="flex-1 overflow-y-auto p-5">
             
-            <section id="tab-search" class="tab-content p-4">
+            <section id="view-search" class="">
                 <div class="relative mb-6">
-                    <input type="text" id="search-input" oninput="runSearch(this.value)" placeholder="곡명, 가수, 번호를 입력하세요..." 
-                        class="w-full p-4 pl-12 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <i class="fas fa-search absolute left-4 top-4.5 text-gray-400"></i>
+                    <input type="text" id="search-input" oninput="runSearch(this.value)" placeholder="곡 제목, 가수, 번호를 입력..." 
+                        class="w-full p-4 pl-12 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm text-sm">
+                    <i class="fas fa-search absolute left-4 top-4.5 text-gray-300"></i>
                 </div>
-                <div id="search-results-list" class="space-y-3">
-                    <p class="text-center text-gray-400 py-10">검색어를 입력해 주세요.</p>
-                </div>
-            </section>
-
-            <section id="tab-chart" class="tab-content p-4">
-                <div class="flex space-x-2 mb-4 overflow-x-auto pb-2">
-                    <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">J-POP TOP 100</span>
-                    <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">애니메이션</span>
-                    <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">K-POP</span>
-                </div>
-                <div id="chart-list" class="space-y-3">
+                <div id="search-results" class="space-y-3">
+                    <div class="text-center py-20 text-gray-300 italic">
+                        <p>TJ/금영 리스트에서 곡을 찾아보세요.</p>
                     </div>
+                </div>
             </section>
 
-            <section id="tab-bookmark" class="tab-content active p-4">
-                <div class="flex items-center space-x-2 mb-4">
-                    <span class="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-2 py-0.5 rounded-md">기본폴더</span>
-                    <span class="text-sm">🍀</span>
-                </div>
-                <div id="empty-bookmark" class="hidden text-center py-20 text-gray-300">
-                    <i class="fas fa-heart-circle-plus text-5xl mb-4"></i>
-                    <p class="text-sm font-medium">저장된 노래가 없습니다.</p>
+            <section id="view-bookmark" class="hidden">
+                <div id="empty-msg" class="text-center py-20 text-gray-300">
+                    <i class="fas fa-bookmark text-4xl mb-3 opacity-20"></i>
+                    <p class="text-sm">저장된 곡이 없습니다.</p>
                 </div>
                 <div id="bookmark-list" class="space-y-3"></div>
             </section>
 
-            <section id="tab-more" class="tab-content">
-                <div class="p-6">
-                    <div class="bg-gray-50 rounded-2xl p-6 mb-6 flex items-center space-x-4 border border-gray-100">
-                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold">U</div>
-                        <div>
-                            <div class="font-bold text-lg text-gray-800">사용자 님</div>
-                            <div class="text-sm text-gray-400">나만의 애창곡 데이터 동기화 중</div>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="p-4 flex justify-between items-center border-b border-gray-50"><span>테마 설정</span><i class="fas fa-chevron-right text-gray-300"></i></div>
-                        <div class="p-4 flex justify-between items-center border-b border-gray-50"><span>데이터 백업/복구</span><i class="fas fa-chevron-right text-gray-300"></i></div>
-                        <div class="p-4 flex justify-between items-center border-b border-gray-50"><span>공지사항</span><i class="fas fa-chevron-right text-gray-300"></i></div>
-                        <div class="p-4 flex justify-between items-center text-red-500 font-bold" onclick="resetAllData()"><span>전체 데이터 초기화</span></div>
-                    </div>
-                </div>
-            </section>
         </main>
-
-        <nav class="fixed bottom-0 max-w-md w-full bg-white border-t flex justify-around p-3 pb-6 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-50">
-            <button onclick="switchTab('search', '검색')" id="nav-search" class="nav-item flex flex-col items-center text-gray-300">
-                <i class="fas fa-search text-xl"></i><span class="text-[10px] mt-1">검색</span>
-            </button>
-            <button onclick="switchTab('chart', '인기차트')" id="nav-chart" class="nav-item flex flex-col items-center text-gray-300">
-                <i class="fas fa-chart-line text-xl"></i><span class="text-[10px] mt-1">인기차트</span>
-            </button>
-            <button onclick="switchTab('bookmark', '내 북마크')" id="nav-bookmark" class="nav-item active-nav flex flex-col items-center">
-                <i class="fas fa-heart text-xl"></i><span class="text-[10px] mt-1">북마크</span>
-            </button>
-            <button onclick="switchTab('more', '설정')" id="nav-more" class="nav-item flex flex-col items-center text-gray-300">
-                <i class="fas fa-ellipsis-h text-xl"></i><span class="text-[10px] mt-1">더보기</span>
-            </button>
-        </nav>
     </div>
 
     <script>
-        // 전체 노래 데이터 (샘플)
-        const RAW_DATA = [
+        /**
+         * 1. 노래방 마스터 데이터 (주요 제이팝/애니송 리스트)
+         * 실제로는 서버에서 가져와야 하지만, 여기에 데이터를 추가하면 검색에 바로 반영됩니다.
+         */
+        const MASTER_DB = [
             { tj: "68781", ky: "44865", title: "アイドル (Idol)", artist: "YOASOBI" },
-            { tj: "27705", ky: "43892", title: "アイのシナ리오", artist: "CHiCO with HoneyWorks" },
+            { tj: "27705", ky: "43892", title: "アイのシナリオ", artist: "CHiCO with HoneyWorks" },
             { tj: "68258", ky: "44445", title: "ファンサ (Fansa)", artist: "Mona" },
-            { tj: "27130", ky: "43254", title: "ヘビーローテーション", artist: "AKB48" },
-            { tj: "68648", ky: "44721", title: "Tot Musica", artist: "Ado" },
-            { tj: "25752", ky: "41998", title: "さくらんぼ", artist: "Otsuka Ai" },
-            { tj: "84694", ky: "44012", title: "빛 (명탐정 코난 OST)", artist: "메이트" },
             { tj: "28812", ky: "44321", title: "Lemon", artist: "Kenshi Yonezu" },
-            { tj: "68432", ky: "44601", title: "Dry Flower", artist: "Yuuri" }
+            { tj: "68648", ky: "44721", title: "Tot Musica", artist: "Ado" },
+            { tj: "68560", ky: "44662", title: "残響散歌 (잔향산가)", artist: "Aimer" },
+            { tj: "28354", ky: "44111", title: "Pretender", artist: "Official髭男dism" },
+            { tj: "68432", ky: "44601", title: "ドライフラワー (드라이 플라워)", artist: "Yuuri" },
+            { tj: "25752", ky: "41998", title: "さくらん보 (사쿠란보)", artist: "Otsuka Ai" },
+            { tj: "68356", ky: "44521", title: "廻廻奇譚 (회회기담)", artist: "Eve" },
+            { tj: "27130", ky: "43254", title: "Heavy Rotation", artist: "AKB48" },
+            { tj: "84694", ky: "44012", title: "빛 (명탐정 코난 OST)", artist: "메이트" },
+            { tj: "68695", ky: "44778", title: "KICK BACK", artist: "Kenshi Yonezu" },
+            { tj: "68802", ky: "44881", title: "Subtitle", artist: "Official髭男dism" }
         ];
 
         let currentBrand = 'TJ';
-        let myBookmarks = JSON.parse(localStorage.getItem('my_karaoke_data')) || [];
+        let mySongs = JSON.parse(localStorage.getItem('my_karaoke_data')) || [];
 
-        // 탭 전환 엔진
-        function switchTab(tabId, title) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
-            document.getElementById('nav-' + tabId).classList.add('active-nav');
-            
-            document.getElementById('page-title').innerText = title;
+        // 탭 전환 기능
+        function showTab(type) {
+            const searchView = document.getElementById('view-search');
+            const bookmarkView = document.getElementById('view-bookmark');
+            const searchBtn = document.getElementById('tab-search-btn');
+            const bookmarkBtn = document.getElementById('tab-bookmark-btn');
 
-            if(tabId === 'chart') renderChart();
-            if(tabId === 'bookmark') renderBookmarks();
+            if (type === 'search') {
+                searchView.classList.remove('hidden');
+                bookmarkView.classList.add('hidden');
+                searchBtn.classList.add('active');
+                bookmarkBtn.classList.remove('active');
+            } else {
+                searchView.classList.add('hidden');
+                bookmarkView.classList.remove('hidden');
+                searchBtn.classList.remove('active');
+                bookmarkBtn.classList.add('active');
+                renderBookmarks();
+            }
         }
 
-        // 브랜드 전환 (TJ/KY)
-        function setBrand(brand) {
+        // 브랜드 변경 (TJ / 금영)
+        function changeBrand(brand) {
             currentBrand = brand;
-            document.getElementById('brand-tj').className = brand === 'TJ' ? 'brand-active flex-1 py-1 text-xs font-bold rounded-lg transition-all' : 'flex-1 py-1 text-xs font-bold rounded-lg transition-all text-gray-400';
-            document.getElementById('brand-ky').className = brand === 'KY' ? 'brand-active flex-1 py-1 text-xs font-bold rounded-lg transition-all' : 'flex-1 py-1 text-xs font-bold rounded-lg transition-all text-gray-400';
+            document.getElementById('btn-tj').className = brand === 'TJ' ? 'active-brand flex-1 py-1.5 text-xs font-bold rounded-lg transition-all' : 'flex-1 py-1.5 text-xs font-bold rounded-lg transition-all text-gray-400';
+            document.getElementById('btn-ky').className = brand === 'KY' ? 'active-brand flex-1 py-1.5 text-xs font-bold rounded-lg transition-all' : 'flex-1 py-1.5 text-xs font-bold rounded-lg transition-all text-gray-400';
             
-            // 모든 화면 갱신
+            // 검색 중이라면 검색 결과 갱신
+            const currentSearch = document.getElementById('search-input').value;
+            if (currentSearch) runSearch(currentSearch);
             renderBookmarks();
-            renderChart();
-            const lastSearch = document.getElementById('search-input').value;
-            if(lastSearch) runSearch(lastSearch);
         }
 
-        // 검색 실행
+        // 검색 로직
         function runSearch(val) {
-            const listDiv = document.getElementById('search-results-list');
-            if(!val) { listDiv.innerHTML = '<p class="text-center text-gray-400 py-10">검색어를 입력해 주세요.</p>'; return; }
+            const resultsDiv = document.getElementById('search-results');
+            if (!val) {
+                resultsDiv.innerHTML = '<div class="text-center py-20 text-gray-300 italic"><p>TJ/금영 리스트에서 곡을 찾아보세요.</p></div>';
+                return;
+            }
 
-            const filtered = RAW_DATA.filter(s => 
+            const filtered = MASTER_DB.filter(s => 
                 s.title.toLowerCase().includes(val.toLowerCase()) || 
                 s.artist.toLowerCase().includes(val.toLowerCase()) ||
                 s.tj.includes(val) || s.ky.includes(val)
             );
 
-            if(filtered.length > 0) {
-                listDiv.innerHTML = filtered.map(s => `
-                    <div onclick='addBookmark(${JSON.stringify(s)})' class="flex items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm active:bg-blue-50 transition-all">
-                        <div class="w-14 text-xl font-black text-blue-600">${currentBrand === 'TJ' ? s.tj : s.ky}</div>
-                        <div class="flex-1 px-4 border-l ml-2">
+            if (filtered.length > 0) {
+                resultsDiv.innerHTML = filtered.map(s => `
+                    <div onclick='addSong(${JSON.stringify(s)})' class="flex items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm active:bg-blue-50 transition-all">
+                        <div class="w-14 text-xl font-black text-blue-600 tracking-tighter">
+                            ${currentBrand === 'TJ' ? s.tj : s.ky}
+                        </div>
+                        <div class="flex-1 px-4 border-l ml-2 overflow-hidden">
                             <div class="font-bold text-gray-800 text-sm truncate">${s.title}</div>
                             <div class="text-[10px] text-gray-400 mt-1 uppercase">${s.artist}</div>
                         </div>
@@ -168,78 +145,61 @@
                     </div>
                 `).join('');
             } else {
-                listDiv.innerHTML = '<p class="text-center text-gray-400 py-10">결과가 없습니다.</p>';
+                resultsDiv.innerHTML = '<p class="text-center text-gray-400 py-20">검색 결과가 없습니다.</p>';
             }
         }
 
-        // 북마크 추가 (한국어 제목 입력)
-        function addBookmark(song) {
-            const userTitle = prompt("앱에 표시될 이름을 직접 입력하세요:", song.title);
-            if(userTitle === null) return;
+        // 곡 추가 (사용자 수기 이름 입력)
+        function addSong(song) {
+            const customTitle = prompt(`내 리스트에 표시할 이름을 입력하세요:\n(원제: ${song.title})`, song.title);
+            if (customTitle === null) return;
 
-            const newItem = { ...song, userTitle: userTitle || song.title, uid: Date.now() };
-            myBookmarks.unshift(newItem);
-            localStorage.setItem('my_karaoke_data', JSON.stringify(myBookmarks));
-            alert('북마크에 추가되었습니다!');
-            switchTab('bookmark', '내 북마크');
+            const newEntry = {
+                ...song,
+                userTitle: customTitle || song.title,
+                uid: Date.now()
+            };
+
+            mySongs.unshift(newEntry);
+            localStorage.setItem('my_karaoke_data', JSON.stringify(mySongs));
+            alert('북마크에 저장되었습니다.');
+            showTab('bookmark');
         }
 
-        // 북마크 렌더링
+        // 북마크 리스트 렌더링
         function renderBookmarks() {
             const listDiv = document.getElementById('bookmark-list');
-            const empty = document.getElementById('empty-bookmark');
-            
-            if(myBookmarks.length === 0) {
-                empty.classList.remove('hidden');
+            const emptyMsg = document.getElementById('empty-msg');
+
+            if (mySongs.length === 0) {
+                emptyMsg.classList.remove('hidden');
                 listDiv.innerHTML = '';
                 return;
             }
 
-            empty.classList.add('hidden');
-            listDiv.innerHTML = myBookmarks.map(s => `
-                <div class="flex items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm relative group active:scale-[0.98] transition-transform">
-                    <div class="w-14 text-2xl font-black text-gray-800 tracking-tighter transition-all">
+            emptyMsg.classList.add('hidden');
+            listDiv.innerHTML = mySongs.map(s => `
+                <div class="flex items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm relative active:scale-[0.98] transition-transform">
+                    <div class="w-14 text-2xl font-black text-gray-800 tracking-tighter">
                         ${currentBrand === 'TJ' ? s.tj : s.ky}
                     </div>
                     <div class="flex-1 px-4 border-l ml-2 overflow-hidden">
                         <div class="font-bold text-gray-900 truncate text-[15px]">${s.userTitle}</div>
-                        <div class="text-[10px] text-gray-400 mt-1 uppercase font-medium">${s.artist}</div>
+                        <div class="text-[10px] text-gray-400 mt-1 uppercase font-medium tracking-wide">${s.artist}</div>
                     </div>
-                    <button onclick="removeBookmark(${s.uid})" class="text-gray-200 hover:text-red-500 p-2">
+                    <button onclick="deleteSong(${s.uid})" class="text-gray-200 hover:text-red-500 p-2">
                         <i class="fas fa-trash-can"></i>
                     </button>
                 </div>
             `).join('');
         }
 
-        function removeBookmark(uid) {
-            if(confirm('이 곡을 삭제하시겠습니까?')) {
-                myBookmarks = myBookmarks.filter(b => b.uid !== uid);
-                localStorage.setItem('my_karaoke_data', JSON.stringify(myBookmarks));
+        // 삭제 기능
+        function deleteSong(uid) {
+            if (confirm('이 곡을 북마크에서 삭제할까요?')) {
+                mySongs = mySongs.filter(s => s.uid !== uid);
+                localStorage.setItem('my_karaoke_data', JSON.stringify(mySongs));
                 renderBookmarks();
-            }
-        }
-
-        // 인기차트 렌더링 (임시)
-        function renderChart() {
-            const listDiv = document.getElementById('chart-list');
-            listDiv.innerHTML = RAW_DATA.map((s, idx) => `
-                <div class="flex items-center bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                    <div class="w-8 font-extrabold text-blue-500">${idx + 1}</div>
-                    <div class="flex-1 px-4">
-                        <div class="font-bold text-gray-800 text-sm truncate">${s.title}</div>
-                        <div class="text-[10px] text-gray-400 uppercase">${s.artist}</div>
-                    </div>
-                    <div class="font-black text-gray-400 text-sm">${currentBrand === 'TJ' ? s.tj : s.ky}</div>
-                </div>
-            `).join('');
-        }
-
-        function resetAllData() {
-            if(confirm('정말로 모든 데이터를 초기화할까요?')) {
-                localStorage.clear();
-                myBookmarks = [];
-                location.reload();
             }
         }
 
