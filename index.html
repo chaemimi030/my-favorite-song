@@ -31,7 +31,12 @@
         .song-card:active { transform: scale(0.97); opacity: 0.8; }
 
         .rich-content { white-space: pre-wrap; word-break: break-all; -webkit-overflow-scrolling: touch; }
-        #lyricsEditor { min-height: 180px; background: #FFFFFF; border-radius: 12px; padding: 16px; outline: none; border: 1px solid #E5E5EA; }
+        #lyricsEditor { min-height: 220px; background: #FFFFFF; border-radius: 12px; padding: 16px; outline: none; border: 1px solid #E5E5EA; font-size: 16px; }
+
+        /* 텍스트 편집 툴바 스타일 */
+        .edit-toolbar { display: flex; gap: 8px; margin-bottom: 8px; background: #E9E9EB; padding: 6px; border-radius: 10px; overflow-x: auto; }
+        .tool-btn { width: 32px; height: 32px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .tool-btn:active { background: #F2F2F7; transform: scale(0.95); }
 
         .tag-jpop { color: #FF3B30; } .tag-kpop { color: #007AFF; } .tag-cpop { color: #FF9500; }
         .text-heart { color: #FF2D55; }
@@ -42,7 +47,7 @@
     <div id="tab-home" class="tab-content active">
         <header class="glass-header px-5 pt-10 pb-4">
             <h1 class="text-3xl font-bold mb-4">Archives</h1>
-            <div class="flex items-center bg-gray-200/60 rounded-xl px-3 py-2.5 mb-4">
+            <div class="flex items-center bg-gray-200/60 rounded-xl px-3 py-2.5 mb-4 shadow-inner">
                 <i class="fas fa-search text-gray-400 mr-2"></i>
                 <input type="text" id="searchInput" oninput="renderList()" placeholder="제목 또는 가수 검색" class="bg-transparent border-none outline-none w-full text-base">
             </div>
@@ -64,17 +69,30 @@
             <button onclick="setFormGenre('K-POP')" id="btnK" class="flex-1 py-2 rounded-lg text-xs font-bold text-gray-500">K-POP</button>
             <button onclick="setFormGenre('C-POP')" id="btnC" class="flex-1 py-2 rounded-lg text-xs font-bold text-gray-500">C-POP</button>
         </div>
+        
         <input type="hidden" id="editingId">
+        
         <div class="space-y-4">
             <input type="text" id="inTitle" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="제목">
             <input type="text" id="inSubTitle" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="부제목 (발음/한국어명)">
             <input type="text" id="inArtist" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="가수명">
+            
             <div class="grid grid-cols-2 gap-3">
                 <input type="text" id="inTJ" class="p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="TJ 번호">
                 <input type="text" id="inKY" class="p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="KY 번호">
             </div>
-            <div id="lyricsEditor" contenteditable="true" class="bg-white shadow-sm"></div>
-            <div class="flex gap-2">
+
+            <div class="edit-toolbar no-scrollbar">
+                <button onclick="execCmd('bold')" class="tool-btn"><i class="fas fa-bold"></i></button>
+                <button onclick="execCmd('foreColor', '#FF3B30')" class="tool-btn text-red-500"><i class="fas fa-font"></i></button>
+                <button onclick="execCmd('foreColor', '#007AFF')" class="tool-btn text-blue-500"><i class="fas fa-font"></i></button>
+                <button onclick="execCmd('foreColor', '#34C759')" class="tool-btn text-green-500"><i class="fas fa-font"></i></button>
+                <button onclick="execCmd('foreColor', '#1C1C1E')" class="tool-btn text-black"><i class="fas fa-eraser"></i></button>
+            </div>
+            
+            <div id="lyricsEditor" contenteditable="true" class="bg-white shadow-sm no-scrollbar" placeholder="가사를 입력하거나 붙여넣으세요"></div>
+            
+            <div class="flex gap-2 pt-2">
                 <button id="cancelEdit" onclick="cancelEditing()" class="hidden flex-1 py-4 bg-gray-200 text-gray-600 rounded-2xl font-bold text-lg">취소</button>
                 <button id="saveBtn" onclick="saveSong()" class="flex-[2] py-4 bg-blue-500 text-white rounded-2xl font-bold text-lg active:scale-95 transition-transform shadow-lg shadow-blue-100">저장하기</button>
             </div>
@@ -92,12 +110,12 @@
 
     <div id="lyricPopup" class="slide-up flex flex-col">
         <header class="px-5 pt-8 pb-4 border-b flex justify-between items-center bg-white">
-            <button onclick="closeLyrics()" class="text-blue-500 font-semibold w-12">닫기</button>
+            <button onclick="closeLyrics()" class="text-blue-500 font-semibold w-12 text-left">닫기</button>
             <div class="text-center overflow-hidden flex-1 px-4">
                 <h3 id="popTitle" class="font-bold truncate text-[15px]"></h3>
                 <p id="popArtist" class="text-[11px] text-gray-400 truncate"></p>
             </div>
-            <div class="flex gap-4 w-12 justify-end">
+            <div class="flex gap-4 w-12 justify-end items-center">
                 <button id="popEditBtn" class="text-gray-400"><i class="fas fa-edit"></i></button>
                 <button id="popFavBtn" class="text-xl"><i class="fas fa-heart"></i></button>
             </div>
@@ -120,6 +138,12 @@
         let currentFilter = 'ALL';
         let formGenre = 'J-POP';
 
+        // 텍스트 편집 명령 실행
+        function execCmd(cmd, value = null) {
+            document.execCommand(cmd, false, value);
+            document.getElementById('lyricsEditor').focus();
+        }
+
         function switchTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.getElementById('tab-' + tabId).classList.remove('hidden');
@@ -140,6 +164,7 @@
             const title = document.getElementById('inTitle').value.trim();
             const artist = document.getElementById('inArtist').value.trim();
             const editId = document.getElementById('editingId').value;
+            const lyricsHtml = document.getElementById('lyricsEditor').innerHTML;
 
             if(!title || !artist) return alert('제목과 가수는 필수입니다.');
 
@@ -149,7 +174,7 @@
                 sub: document.getElementById('inSubTitle').value.trim(),
                 artist, tj: document.getElementById('inTJ').value || '-',
                 ky: document.getElementById('inKY').value || '-',
-                lyrics: document.getElementById('lyricsEditor').innerHTML,
+                lyrics: lyricsHtml,
                 fav: editId ? songs.find(s => s.id === parseInt(editId)).fav : false
             };
 
@@ -168,10 +193,8 @@
         function editSong(id) {
             const song = songs.find(s => s.id === id);
             if(!song) return;
-
             closeLyrics();
             switchTab('add', document.querySelectorAll('.nav-item')[1]);
-            
             document.getElementById('formTitle').innerText = '노래 수정';
             document.getElementById('editingId').value = song.id;
             document.getElementById('inTitle').value = song.title;
@@ -186,6 +209,7 @@
         }
 
         function cancelEditing() {
+            if(document.getElementById('editingId').value === '') return;
             document.getElementById('formTitle').innerText = '노래 추가';
             document.getElementById('editingId').value = '';
             document.getElementById('inTitle').value = '';
@@ -216,7 +240,6 @@
                 if(currentFilter === 'FAV') return match && s.fav;
                 return match && s.genre === currentFilter;
             });
-
             container.innerHTML = filtered.length ? '' : '<div class="text-center py-20 text-gray-400">데이터가 없습니다.</div>';
             filtered.forEach(s => {
                 const card = document.createElement('div');
@@ -248,7 +271,6 @@
             document.getElementById('popTJ').innerText = song.tj;
             document.getElementById('popKY').innerText = song.ky;
             document.getElementById('popContent').innerHTML = song.lyrics;
-            
             const favBtn = document.getElementById('popFavBtn');
             favBtn.style.color = song.fav ? '#FF2D55' : '#E5E5EA';
             favBtn.onclick = () => {
@@ -257,7 +279,6 @@
                 favBtn.style.color = song.fav ? '#FF2D55' : '#E5E5EA';
                 renderList();
             };
-
             document.getElementById('popEditBtn').onclick = () => editSong(id);
             document.getElementById('lyricPopup').classList.add('active');
         }
@@ -265,10 +286,8 @@
         function closeLyrics() { document.getElementById('lyricPopup').classList.remove('active'); }
         function exportData() {
             const blob = new Blob([JSON.stringify(songs)], {type: 'application/json'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `karaoke_backup.json`;
-            a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+            a.download = `karaoke_backup.json`; a.click();
         }
         function importData(input) {
             const reader = new FileReader();
