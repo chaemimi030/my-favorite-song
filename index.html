@@ -68,9 +68,17 @@
             padding: 16px; outline: none; border: 1px solid #E5E5EA;
         }
 
+        /* Empty State */
+        .no-content {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; padding-top: 100px; color: #8E8E93;
+        }
+        .no-content i { font-size: 50px; opacity: 0.3; margin-bottom: 15px; }
+
         .tag-jpop { color: #FF3B30; } 
         .tag-kpop { color: #007AFF; } 
         .tag-cpop { color: #FF9500; }
+        .text-heart { color: #FF2D55; }
     </style>
 </head>
 <body>
@@ -78,16 +86,18 @@
     <div id="tab-home" class="tab-content active">
         <header class="glass-header px-5 pt-10 pb-4">
             <h1 class="text-3xl font-bold mb-4">Archives</h1>
-            <div class="flex items-center bg-gray-200/60 rounded-xl px-3 py-2.5 mb-4">
+            <div class="flex items-center bg-gray-200/60 rounded-xl px-3 py-2.5 mb-4 shadow-inner">
                 <i class="fas fa-search text-gray-400 mr-2"></i>
                 <input type="text" id="searchInput" oninput="renderList()" placeholder="제목 또는 가수 검색" class="bg-transparent border-none outline-none w-full text-base">
             </div>
             <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <button onclick="setFilter('FAV')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-500 border">
+                    <i class="fas fa-heart mr-1"></i>즐겨찾기
+                </button>
                 <button onclick="setFilter('ALL')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-black text-white">전체</button>
                 <button onclick="setFilter('J-POP')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-500 border">J-POP</button>
                 <button onclick="setFilter('K-POP')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-500 border">K-POP</button>
                 <button onclick="setFilter('C-POP')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-500 border">C-POP</button>
-                <button onclick="setFilter('FAV')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-white text-gray-500 border"><i class="fas fa-star mr-1"></i>즐겨찾기</button>
             </div>
         </header>
         <main class="px-5 pt-4 pb-28" id="mainList"></main>
@@ -101,7 +111,6 @@
             <button onclick="setFormGenre('C-POP')" id="btnC" class="flex-1 py-2 rounded-lg text-xs font-bold text-gray-500">C-POP</button>
         </div>
         <div class="space-y-4">
-            <div id="formGuide" class="text-[11px] font-bold text-blue-500 px-1">J-POP 양식으로 설정되었습니다.</div>
             <input type="text" id="inTitle" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="제목">
             <input type="text" id="inSubTitle" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="부제목 (발음/한국어명)">
             <input type="text" id="inArtist" class="w-full p-4 rounded-xl bg-white shadow-sm outline-none" placeholder="가수명">
@@ -136,7 +145,7 @@
                 <h3 id="popTitle" class="font-bold truncate text-[15px]"></h3>
                 <p id="popArtist" class="text-[11px] text-gray-400 truncate"></p>
             </div>
-            <button id="popFavBtn" class="text-2xl"><i class="fas fa-star"></i></button>
+            <button id="popFavBtn" class="text-2xl"><i class="fas fa-heart"></i></button>
         </header>
         <div id="popContent" class="flex-1 overflow-y-auto p-6 rich-content text-[18px] leading-relaxed"></div>
         <div class="p-5 border-t bg-gray-50 flex gap-3">
@@ -175,7 +184,6 @@
             const btns = { 'J-POP': 'btnJ', 'K-POP': 'btnK', 'C-POP': 'btnC' };
             Object.values(btns).forEach(id => document.getElementById(id).className = 'flex-1 py-2 rounded-lg text-xs font-bold text-gray-500');
             document.getElementById(btns[g]).className = 'flex-1 py-2 rounded-lg text-xs font-bold bg-white shadow-sm';
-            document.getElementById('formGuide').innerText = `${g} 양식으로 설정되었습니다.`;
         }
 
         function saveSong() {
@@ -197,7 +205,12 @@
         function setFilter(f) {
             currentFilter = f;
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                const isMatch = (f === 'ALL' && btn.innerText === '전체') || btn.innerText.includes(f);
+                const btnText = btn.innerText.trim();
+                let isMatch = false;
+                if(f === 'ALL' && btnText === '전체') isMatch = true;
+                else if(f === 'FAV' && btnText.includes('즐겨찾기')) isMatch = true;
+                else if(btnText === f) isMatch = true;
+
                 btn.className = `filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold ${isMatch ? 'bg-black text-white' : 'bg-white text-gray-500 border'}`;
             });
             renderList();
@@ -212,7 +225,18 @@
                 if(currentFilter === 'FAV') return match && s.fav;
                 return match && s.genre === currentFilter;
             });
-            container.innerHTML = filtered.length ? '' : '<div class="text-center py-20 text-gray-400">데이터가 없습니다.</div>';
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="no-content">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <p class="font-bold text-lg">NO CONTENT FOUND</p>
+                        <p class="text-sm">검색 결과가 없거나 등록된 노래가 없습니다.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = '';
             const frag = document.createDocumentFragment();
             filtered.forEach(s => {
                 const card = document.createElement('div');
@@ -221,7 +245,10 @@
                 const genreClass = s.genre === 'J-POP' ? 'tag-jpop' : (s.genre === 'K-POP' ? 'tag-kpop' : 'tag-cpop');
                 card.innerHTML = `
                     <div class="overflow-hidden pr-4">
-                        <h4 class="font-bold text-[17px] truncate">${s.title}</h4>
+                        <div class="flex items-center gap-1">
+                            ${s.fav ? '<i class="fas fa-heart text-heart text-[10px]"></i>' : ''}
+                            <h4 class="font-bold text-[17px] truncate">${s.title}</h4>
+                        </div>
                         <p class="text-[12px] text-gray-400 truncate">${s.sub ? s.sub + ' · ' : ''}${s.artist}</p>
                         <span class="${genreClass} text-[10px] font-bold uppercase">${s.genre}</span>
                     </div>
@@ -242,12 +269,13 @@
             document.getElementById('popTJ').innerText = song.tj;
             document.getElementById('popKY').innerText = song.ky;
             document.getElementById('popContent').innerHTML = song.lyrics;
+            
             const favBtn = document.getElementById('popFavBtn');
-            favBtn.style.color = song.fav ? '#FFCC00' : '#E5E5EA';
+            favBtn.style.color = song.fav ? '#FF2D55' : '#E5E5EA';
             favBtn.onclick = () => {
                 song.fav = !song.fav;
                 localStorage.setItem('karaoke_v3_data', JSON.stringify(songs));
-                favBtn.style.color = song.fav ? '#FFCC00' : '#E5E5EA';
+                favBtn.style.color = song.fav ? '#FF2D55' : '#E5E5EA';
             };
             document.getElementById('lyricPopup').classList.add('active');
         }
